@@ -174,6 +174,26 @@ details.card[open] summary{margin-bottom:8px}
 .vidw{position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#000;margin:0 0 12px}
 .vidw iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 video.vid{width:100%;aspect-ratio:16/9;border-radius:18px;margin:0 0 12px;background:#000}
+/* постеры видео */
+.vbox{margin:0 0 12px}
+.vcard,.pst{position:relative;display:block;width:100%;border-radius:18px;overflow:hidden;border:1px solid var(--ln);padding:0;text-align:left;color:#fff;
+  background:radial-gradient(120% 140% at 85% 0%,#3a3a3a 0%,#161616 55%,#080808 100%)}
+.vcard{aspect-ratio:16/9}
+.pst{aspect-ratio:2/1;margin:0 0 12px}
+.vcard:active,.pst:active{transform:scale(.99)}
+.vcard img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.vcard::after,.pst::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.78),rgba(0,0,0,0) 62%)}
+.ve{position:absolute;left:16px;top:10px;font-size:58px;line-height:1;z-index:1;filter:drop-shadow(0 4px 12px rgba(0,0,0,.5))}
+.vp{position:absolute;right:16px;top:50%;transform:translateY(-50%);z-index:2;width:54px;height:54px;border-radius:50%;
+  background:rgba(255,255,255,.94);display:grid;place-items:center;box-shadow:0 4px 16px rgba(0,0,0,.45)}
+.vp::before{content:"";margin-left:4px;border-style:solid;border-width:10px 0 10px 16px;border-color:transparent transparent transparent #000}
+.pst.lk{opacity:.7}
+.pst.lk .vp::before{border:0;margin:0;content:"🔒";font-size:22px}
+.vt{position:absolute;left:16px;right:84px;bottom:12px;z-index:2;display:flex;flex-direction:column;gap:2px}
+.vt b{font-size:15px;line-height:1.25}
+.vt small{font-size:12px;opacity:.85}
+.pst .ok{position:absolute;right:12px;top:10px;z-index:2;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.92);color:#000}
+.vlink{display:block;margin:6px 0 0;font-size:13px;color:var(--mu);background:none;border:0;padding:4px 0;text-decoration:underline}
 .lp{display:flex;flex-direction:column;min-height:calc(100vh - 150px)}
 .lp-seg{display:flex;gap:4px;margin:4px 0 10px}
 .lp-seg i{flex:1;height:4px;border-radius:2px;background:var(--ln);overflow:hidden}
@@ -430,6 +450,45 @@ const JOURNAL_PROMPTS = [
 const sc = (e,t,s,sec,a) => ({e,t,s,sec,a});
 const PLAN_PHRASES = ['Не, спасибо. Что там по плану?','Мне нельзя, я на режиме','Я не пью, мне так лучше','Спасибо, у меня уже есть напиток'];
 const PLAN_EXITS = ['Уйду в оговорённое время','Уйду, если начнут давить','Позвоню родителям или другу, чтобы забрали','Выйду на воздух на 10 минут'];
+
+/* ── ВИДЕО К МАТЕРИАЛАМ ─────────────────────────────────────────────
+   Вставляй обычные ссылки на ролики — адрес для встраивания скрипт соберёт сам.
+   Работают: YouTube, RuTube (rutube.ru/video/…), VK Видео (vk.com/video-123_456), прямой .mp4.
+   Пустой список [] — видео в материале не показывается.
+   Формат одной записи: {title:'Название', url:'ссылка', dur:'3 мин'}  (title и dur необязательны)
+   Пример: say_no:[{title:'Как отказать', url:'https://rutube.ru/video/0123456789abcdef0123456789abcdef/', dur:'4 мин'}] */
+const VIDEOS = {
+  audio_session:[
+    {title:'Дыхание 4-7-8 от врача-сомнолога', url:'https://rutube.ru/video/b5a89d9254f10e7cd4ae76617630959d/', dur:'4 мин'},
+    {title:'Успокоиться за 5 минут: дыхание 4-7-8', url:'https://rutube.ru/video/a51c8bd2a4050140d87677cd84cf8bc2/', dur:'5 мин'}],
+  craving_wave:[
+    {title:'Эмоциональный серфинг: пережить волну желания', url:'https://www.youtube.com/watch?v=PcryKZEPpwQ'}],
+  say_no:[
+    {title:'Сделай правильный выбор', url:'https://rutube.ru/video/3f19b964945b9e764dbdf50b3f1f7bd2/', dur:'30 сек'}],
+  brain_truth:[
+    {title:'Алкоголь. Взгляд изнутри: что с мозгом', url:'https://rutube.ru/video/cf94a27988ba1a0d813911e7304d8edf/', dur:'21 мин'}],
+  env_guide:[
+    {title:'Здоровье с детства: твой выбор', url:'https://rutube.ru/video/3f19b964945b9e764dbdf50b3f1f7bd2/', dur:'30 сек'}],
+  ai_trainer:[
+    {title:'Если накрыло: как быстро успокоиться', url:'https://rutube.ru/video/a51c8bd2a4050140d87677cd84cf8bc2/', dur:'5 мин'}],
+  night_plan:[
+    {title:'Если станет тяжело: успокаиваем дыхание', url:'https://rutube.ru/video/b5a89d9254f10e7cd4ae76617630959d/', dur:'4 мин'}],
+};
+function vidInfo(u){
+  u = String(u||'').trim(); let m, h;
+  if(/\.(mp4|webm)(\?|$)/i.test(u)) return {name:'Видео', file:true, embed:u};
+  if((m=u.match(/(?:youtube\.com\/(?:watch\?(?:.*&)?v=|shorts\/|embed\/|live\/)|youtu\.be\/)([\w-]{11})/)))
+    return {name:'YouTube', embed:`https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&playsinline=1&autoplay=1`, thumb:`https://i.ytimg.com/vi/${m[1]}/hqdefault.jpg`};
+  if((m=u.match(/rutube\.ru\/(?:video|play\/embed|shorts)\/([0-9a-f]{32})/i)))
+    return {name:'RuTube', embed:`https://rutube.ru/play/embed/${m[1]}?autoStart=true`};
+  if(/video_ext\.php/.test(u)) return {name:'VK Видео', embed:u+(/autoplay=/.test(u)?'':'&autoplay=1')};
+  if((m=u.match(/(?:vk\.com|vkvideo\.ru)\/(?:[\w\/?=&.-]*?)video(-?\d+)_(\d+)/))){
+    h=u.match(/[?&]hash=(\w+)/);
+    return {name:'VK Видео', embed:`https://vk.com/video_ext.php?oid=${m[1]}&id=${m[2]}&hd=2&autoplay=1${h?'&hash='+h[1]:''}`};
+  }
+  return {name:'Видео', embed:u};
+}
+const vids = k => { const it=ITEMS[k]||{}, a=(VIDEOS[k]||[]).filter(v=>v&&v.url); return it.video ? [{url:it.video}].concat(a) : a; };
 
 const ITEMS = {
   audio_session:{type:'lesson',emoji:'🌬️',title:'Дыхание 4-7-8 за минуту',price:50,video:'',
@@ -902,7 +961,7 @@ const itemBtn = k => { const it=ITEMS[k]; return it.type==='lesson' ? (itemDone(
 function openItem(k){
   const it=ITEMS[k]; if(!it) return;
   if(it.type==='tool') go('plan',k);
-  else if(it.type==='lesson' && !it.video) go('lesson',k);
+  else if(it.type==='lesson' && !vids(k).length) go('lesson',k);
   else go('item',k);
 }
 screens.shop = () => {
@@ -918,7 +977,7 @@ screens.shop = () => {
   ${keys.map(k=>{
     const it=ITEMS[k], owned=S.inv.includes(k), enough=S.balance>=it.price;
     return `<section class="card">
-      <div class="row"><span class="tag">${TYPE_LABEL[it.type]}</span><span class="muted">${itemDur(it)}</span></div>
+      ${it.type==='lesson' ? poster(k,owned) : `<div class="row"><span><span class="tag">${TYPE_LABEL[it.type]}</span>${vids(k).length?' <span class="tag">🎬 + видео</span>':''}</span><span class="muted">${itemDur(it)}</span></div>`}
       <h3 style="font-size:18px;margin:10px 0 4px">${it.emoji} ${esc(it.title)}</h3>
       <p class="muted" style="margin:0 0 12px">${esc(it.desc)}</p>
       ${owned ? `<div class="row"><span class="muted">${itemDone(k)?'✅ Пройдено':'Открыто'}</span><button class="btn sm" data-act="read" data-k="${k}">${itemBtn(k)}</button></div>`
@@ -927,12 +986,26 @@ screens.shop = () => {
     </section>`;}).join('')}`;
 };
 
-const videoHtml = src => /\.(mp4|webm)(\?|$)/i.test(src)
-  ? `<video class="vid" src="${esc(src)}" controls playsinline preload="metadata"></video>`
-  : `<div class="vidw"><iframe src="${esc(src)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+const playerHtml = u => { const i=vidInfo(u);
+  return i.file ? `<video class="vid" src="${esc(i.embed)}" controls autoplay playsinline></video>`
+    : `<div class="vidw"><iframe src="${esc(i.embed)}" allow="autoplay; fullscreen; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>`; };
+function vidCard(k,i,v){
+  const it=ITEMS[k], inf=vidInfo(v.url), id=`vb_${k}_${i}`;
+  return `<div class="vbox" id="${id}"><button class="vcard" data-act="vplay" data-id="${id}" data-u="${esc(v.url)}" aria-label="Смотреть видео">
+    ${inf.thumb?`<img src="${esc(inf.thumb)}" alt="" loading="lazy" onerror="this.remove()">`:''}
+    <span class="ve">${it.emoji}</span><span class="vp"></span>
+    <span class="vt"><b>${esc(v.title||it.title)}</b><small>▶ ${v.dur?esc(v.dur)+' · ':''}${inf.name}</small></span></button></div>`;
+}
+const videoBlock = (k,head) => { const a=vids(k);
+  return a.length ? (head ? `<h3 style="margin:14px 0 8px">🎬 Видео по теме</h3>` : '') + a.map((v,i)=>vidCard(k,i,v)).join('') : ''; };
+const poster = (k,owned) => { const it=ITEMS[k];
+  return `<button class="pst ${owned?'':'lk'}" data-act="${owned?'read':'buy'}" data-k="${k}" aria-label="${esc(it.title)}">
+    <span class="ve">${it.emoji}</span><span class="vp"></span>${itemDone(k)?'<span class="ok">✅ Пройдено</span>':''}
+    <span class="vt"><small>🎬 Видео-урок · ${itemDur(it)}</small></span></button>`; };
 screens.item = k => { const it=ITEMS[k]; return `<h1>${it.emoji} ${esc(it.title)}</h1>
-  ${it.video ? videoHtml(it.video) : ''}
-  ${it.scenes ? `<button class="btn ${it.video?'ghost':''}" data-act="lesson" data-k="${k}">▶️ Смотреть по слайдам</button><div class="sp"></div>` : ''}
+  ${videoBlock(k, it.type!=='lesson')}
+  ${it.type==='lesson' && vids(k).length ? (S.lessonDone.includes(k) ? '<p class="muted center">✅ Урок пройден</p>' : `<button class="btn" data-act="vdone" data-k="${k}">✅ Я посмотрел(а) урок</button><div class="sp"></div>`) : ''}
+  ${it.scenes ? `<button class="btn ${vids(k).length?'ghost':''}" data-act="lesson" data-k="${k}">▶️ Смотреть по слайдам</button><div class="sp"></div>` : ''}
   ${it.task ? `<section class="card"><h3>📌 Задание на сегодня</h3><p style="margin:0">${esc(it.task)}</p></section>` : ''}
   ${it.html ? `<section class="card rich">${it.html}</section>` : ''}
   <button class="btn ghost" data-act="back">Назад</button>`; };
@@ -979,10 +1052,11 @@ function lpFinish(){
 }
 
 /* ── Инструмент: «Мой план на вечер» ── */
-screens.plan = () => {
+screens.plan = k => {
   const P = S.plan || {};
   return `<h1>🗓️ Мой план на вечер</h1>
   <p class="muted">Заполни заранее, пока спокойно. Когда начнётся давление, думать уже не придётся — просто действуй по плану.</p>
+  ${videoBlock(k||'night_plan', true)}
   ${S.plan ? `<section class="card inv"><h3>Мой план${P.event?': '+esc(P.event):''}</h3>
     ${P.phrase?`<p style="margin:0 0 6px">🗣 ${esc(P.phrase)}</p>`:''}
     ${P.exit?`<p style="margin:0 0 6px">🚪 ${esc(P.exit)}</p>`:''}
@@ -1211,6 +1285,9 @@ const A = {
     });
   },
   read(d){ openItem(d.k); },
+  vplay(d){ const box=document.getElementById(d.id); if(!box) return; hap('light');
+    box.innerHTML = playerHtml(d.u) + `<button class="vlink" data-act="open" data-u="${esc(d.u)}">Не открывается? Смотреть на сайте ↗</button>`; },
+  vdone(d){ if(!S.lessonDone.includes(d.k)){ S.lessonDone.push(d.k); save(); } hap('success'); toast('✅ Урок пройден'); render(); },
   lesson(d){ go('lesson',d.k); },
   lpnext(){ lpNext(); },
   lpprev(){ lpGo(LP.done ? LP.i : LP.i-1); },
