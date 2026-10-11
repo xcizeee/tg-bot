@@ -187,7 +187,11 @@ video.vid{width:100%;aspect-ratio:16/9;border-radius:18px;margin:0 0 12px;backgr
 .vp{position:absolute;right:16px;top:50%;transform:translateY(-50%);z-index:2;width:54px;height:54px;border-radius:50%;
   background:rgba(255,255,255,.94);display:grid;place-items:center;box-shadow:0 4px 16px rgba(0,0,0,.45)}
 .vp::before{content:"";margin-left:4px;border-style:solid;border-width:10px 0 10px 16px;border-color:transparent transparent transparent #000}
-.pst.lk{opacity:.7}
+.pst.lk{filter:grayscale(1);opacity:.7}
+.card.locked{background:var(--sf2);border-style:dashed}
+.card.locked .em{filter:grayscale(1);opacity:.6}
+.card.locked h3,.card.locked p.muted{opacity:.7}
+.lockb{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--tx);color:var(--bg)}
 .pst.lk .vp::before{border:0;margin:0;content:"🔒";font-size:22px}
 .vt{position:absolute;left:16px;right:84px;bottom:12px;z-index:2;display:flex;flex-direction:column;gap:2px}
 .vt b{font-size:15px;line-height:1.25}
@@ -970,13 +974,13 @@ screens.shop = () => {
   <div class="sp"></div>
   ${keys.map(k=>{
     const it=ITEMS[k], owned=S.inv.includes(k), enough=S.balance>=it.price;
-    return `<section class="card">
-      ${it.type==='lesson' ? poster(k,owned) : `<div class="row"><span><span class="tag">${TYPE_LABEL[it.type]}</span>${vids(k).length?' <span class="tag">🎬 + видео</span>':''}</span><span class="muted">${itemDur(it)}</span></div>`}
-      <h3 style="font-size:18px;margin:10px 0 4px">${it.emoji} ${esc(it.title)}</h3>
+    return `<section class="card ${owned?'':'locked'}">
+      ${it.type==='lesson' ? poster(k,owned) : `<div class="row"><span><span class="tag">${TYPE_LABEL[it.type]}</span>${vids(k).length?' <span class="tag">🎬 + видео</span>':''}${owned?'':' <span class="lockb">🔒 Закрыто</span>'}</span><span class="muted">${itemDur(it)}</span></div>`}
+      <h3 style="font-size:18px;margin:10px 0 4px"><span class="em">${it.emoji}</span> ${esc(it.title)}</h3>
       <p class="muted" style="margin:0 0 12px">${esc(it.desc)}</p>
       ${owned ? `<div class="row"><span class="muted">${itemDone(k)?'✅ Пройдено':'Открыто'}</span><button class="btn sm" data-act="read" data-k="${k}">${itemBtn(k)}</button></div>`
-        : enough ? `<div class="row"><span class="price">${it.price} ◇</span><button class="btn sm" data-act="buy" data-k="${k}">Открыть</button></div>`
-        : `<div class="bar" style="margin-bottom:8px"><i style="width:${Math.round(S.balance/it.price*100)}%"></i></div><div class="row"><span class="muted">Не хватает ${it.price-S.balance} ◇</span><span class="price">${it.price} ◇</span></div>`}
+        : enough ? `<div class="row"><span class="price">🔒 ${it.price} ◇</span><button class="btn sm" data-act="buy" data-k="${k}">Открыть за ${it.price} ◇</button></div>`
+        : `<div class="bar" style="margin-bottom:8px"><i style="width:${Math.round(S.balance/it.price*100)}%"></i></div><div class="row"><span class="muted">Не хватает ${it.price-S.balance} ◇</span><span class="price">🔒 ${it.price} ◇</span></div>`}
     </section>`;}).join('')}`;
 };
 
@@ -994,7 +998,7 @@ const videoBlock = (k,head) => { const a=vids(k);
   return a.length ? (head ? `<h3 style="margin:14px 0 8px">🎬 Видео по теме</h3>` : '') + a.map((v,i)=>vidCard(k,i,v)).join('') : ''; };
 const poster = (k,owned) => { const it=ITEMS[k];
   return `<button class="pst ${owned?'':'lk'}" data-act="${owned?'read':'buy'}" data-k="${k}" aria-label="${esc(it.title)}">
-    <span class="ve">${it.emoji}</span><span class="vp"></span>${itemDone(k)?'<span class="ok">✅ Пройдено</span>':''}
+    <span class="ve">${it.emoji}</span><span class="vp"></span>${!owned?'<span class="ok">🔒 Закрыто</span>':itemDone(k)?'<span class="ok">✅ Пройдено</span>':''}
     <span class="vt"><small>🎬 Видео-урок · ${itemDur(it)}</small></span></button>`; };
 screens.item = k => { const it=ITEMS[k]; return `<h1>${it.emoji} ${esc(it.title)}</h1>
   ${videoBlock(k, it.type!=='lesson')}
