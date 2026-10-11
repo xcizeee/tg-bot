@@ -458,21 +458,15 @@ const PLAN_EXITS = ['Уйду в оговорённое время','Уйду, �
    Формат одной записи: {title:'Название', url:'ссылка', dur:'3 мин'}  (title и dur необязательны)
    Пример: say_no:[{title:'Как отказать', url:'https://rutube.ru/video/0123456789abcdef0123456789abcdef/', dur:'4 мин'}] */
 const VIDEOS = {
-  audio_session:[
-    {title:'Дыхание 4-7-8 от врача-сомнолога', url:'https://rutube.ru/video/b5a89d9254f10e7cd4ae76617630959d/', dur:'4 мин'},
-    {title:'Успокоиться за 5 минут: дыхание 4-7-8', url:'https://rutube.ru/video/a51c8bd2a4050140d87677cd84cf8bc2/', dur:'5 мин'}],
-  craving_wave:[
-    {title:'Эмоциональный серфинг: пережить волну желания', url:'https://www.youtube.com/watch?v=PcryKZEPpwQ'}],
-  say_no:[
-    {title:'Сделай правильный выбор', url:'https://rutube.ru/video/3f19b964945b9e764dbdf50b3f1f7bd2/', dur:'30 сек'}],
-  brain_truth:[
-    {title:'Алкоголь. Взгляд изнутри: что с мозгом', url:'https://rutube.ru/video/cf94a27988ba1a0d813911e7304d8edf/', dur:'21 мин'}],
+  audio_session:[],
+  craving_wave:[],
+  say_no:[],
+  brain_truth:[],
   env_guide:[
     {title:'Здоровье с детства: твой выбор', url:'https://rutube.ru/video/3f19b964945b9e764dbdf50b3f1f7bd2/', dur:'30 сек'}],
   ai_trainer:[
     {title:'Если накрыло: как быстро успокоиться', url:'https://rutube.ru/video/a51c8bd2a4050140d87677cd84cf8bc2/', dur:'5 мин'}],
-  night_plan:[
-    {title:'Если станет тяжело: успокаиваем дыхание', url:'https://rutube.ru/video/b5a89d9254f10e7cd4ae76617630959d/', dur:'4 мин'}],
+  night_plan:[],
 };
 function vidInfo(u){
   u = String(u||'').trim(); let m, h;
