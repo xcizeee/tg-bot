@@ -165,6 +165,45 @@ nav button.on .e{background:var(--tx);filter:none}
 .sos-contact{text-align:left;display:flex;align-items:center;gap:12px}
 .sos-contact .e{font-size:26px}
 
+
+/* материалы, видео-уроки, копилка */
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:3px 10px;border-radius:999px;border:1px solid var(--ln);background:var(--sf2)}
+details.card summary{cursor:pointer;font-weight:600;list-style:none}
+details.card summary::-webkit-details-marker{display:none}
+details.card[open] summary{margin-bottom:8px}
+.vidw{position:relative;width:100%;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#000;margin:0 0 12px}
+.vidw iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+video.vid{width:100%;aspect-ratio:16/9;border-radius:18px;margin:0 0 12px;background:#000}
+.lp{display:flex;flex-direction:column;min-height:calc(100vh - 150px)}
+.lp-seg{display:flex;gap:4px;margin:4px 0 10px}
+.lp-seg i{flex:1;height:4px;border-radius:2px;background:var(--ln);overflow:hidden}
+.lp-seg b{display:block;height:100%;width:0;background:var(--tx)}
+.lp-head{display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:14px}
+.lp-stage{position:relative;flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:12px 4px;min-height:340px}
+.lp-z{position:absolute;top:0;bottom:0;background:none;border:0;z-index:2;padding:0}
+.lp-z.l{left:0;width:30%}
+.lp-z.r{right:0;width:70%}
+.lp-stage.done .lp-z{display:none}
+.sc{position:relative;z-index:1;width:100%;animation:scIn .35s ease both}
+.sc-e{font-size:84px;line-height:1;margin-bottom:18px;display:inline-block}
+.sc-t{font:700 24px/1.2 'Unbounded',sans-serif;margin:0 0 12px;letter-spacing:-.02em}
+.sc-s{font-size:18px;line-height:1.5;margin:0 auto;max-width:420px}
+.lp-ctl{display:flex;gap:8px;justify-content:center;margin-top:8px}
+.lp-ctl .btn + .btn{margin-top:0}
+@keyframes scIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+@keyframes breath{0%,100%{transform:scale(.8)}50%{transform:scale(1.25)}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@keyframes wave{0%,100%{transform:translateX(-8px) rotate(-4deg)}50%{transform:translateX(8px) rotate(4deg)}}
+@keyframes pop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.a-pulse{animation:pulse 2.2s ease-in-out infinite}
+.a-breath{animation:breath 5s ease-in-out infinite}
+.a-float{animation:floaty 2.6s ease-in-out infinite}
+.a-wave{animation:wave 3s ease-in-out infinite}
+.a-pop{animation:pop .6s ease both}
+.big-money{font:700 40px/1.1 'Unbounded',sans-serif;letter-spacing:-.03em;margin:10px 0 6px;font-variant-numeric:tabular-nums;word-break:break-word}
+@media (prefers-reduced-motion:reduce){.a-pulse,.a-breath,.a-float,.a-wave,.sc{animation:none!important}}
+
 :focus-visible{outline:2px solid var(--tx);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){.orb i{transition:none!important}}
 </style>
@@ -300,20 +339,48 @@ const JOURNAL_PROMPTS = [
   'За что я могу себя похвалить?',
 ];
 
+/* Видео-уроки: у каждого материала можно задать video — ссылку на настоящий ролик:
+   embed-ссылка RuTube (https://rutube.ru/play/embed/ID), VK Видео, YouTube (https://www.youtube.com/embed/ID)
+   или прямой файл .mp4. Пока video пустое, урок показывается как анимированные слайды. */
+const sc = (e,t,s,sec,a) => ({e,t,s,sec,a});
+const PLAN_PHRASES = ['Не, спасибо. Что там по плану?','Мне нельзя, я на режиме','Я не пью, мне так лучше','Спасибо, у меня уже есть напиток'];
+const PLAN_EXITS = ['Уйду в оговорённое время','Уйду, если начнут давить','Позвоню родителям или другу, чтобы забрали','Выйду на воздух на 10 минут'];
+
 const ITEMS = {
-  audio_session:{emoji:'🌬️',title:'Дыхательная практика от тяги',price:50,html:`
-    <p>Закрой глаза и подыши по схеме <b>4-7-8</b>:</p>
-    <ol><li>Вдохни носом, считая до 4.</li><li>Задержи дыхание на 7 счётов.</li><li>Медленно выдохни ртом на 8 счётов.</li></ol>
-    <p>Повтори цикл 5 раз. Такое дыхание помогает успокоить нервную систему и часто ослабляет остроту тяги — но это не волшебная кнопка, а инструмент, который работает лучше, если тренировать его регулярно, а не только в критический момент.</p>
-    <p class="muted">Подсказка: на главной есть раздел «Дышать» — там это же упражнение с анимацией.</p>`},
-  env_guide:{emoji:'🧭',title:'Фильтр окружения',price:100,html:`
+  audio_session:{type:'lesson',emoji:'🌬️',title:'Дыхание 4-7-8 за минуту',price:50,video:'',
+    desc:'Короткий урок: как дышать, чтобы снизить напряжение, когда накрывает.',
+    task:'Сделай сегодня перед сном 4 круга дыхания 4-7-8 — так навык закрепится.',
+    cta:{s:'breathe',t:'🌬️ Потренироваться сейчас'},
+    scenes:[
+      sc('🌬️','Дыхание, которое успокаивает','Это упражнение помогает снизить напряжение, когда накрывает. Займёт минуту.',6,'a-breath'),
+      sc('🪑','Сядь удобно','Спина прямая, плечи опущены. Одну руку положи на живот.',5,'a-float'),
+      sc('🫁','Вдох — 4 счёта','Медленно вдохни носом. Живот слегка выдвигается вперёд.',6,'a-breath'),
+      sc('⏸️','Задержка — 7 счётов','Не напрягайся. Просто спокойно пережди.',6,'a-pulse'),
+      sc('💨','Выдох — 8 счётов','Длинный выдох ртом, как будто остужаешь горячий чай.',6,'a-wave'),
+      sc('🔁','Повтори 4–5 раз','Если закружилась голова — дыши в обычном ритме. Со временем станет легче.',7,'a-pulse'),
+      sc('💡','Тренируйся заранее','Когда практикуешь каждый день, в трудный момент тело само вспоминает, что делать.',7,'a-float')]},
+  craving_wave:{type:'lesson',emoji:'🌊',title:'Тяга — это волна',price:80,video:'',
+    desc:'Пошаговый приём, как пережить пик тяги за 20 минут и не сорваться.',
+    task:'В следующий раз, когда придёт тяга, запусти таймер «Переждать тягу» и дойди до конца.',
+    cta:{s:'craving',t:'⏳ Открыть таймер тяги'},
+    scenes:[
+      sc('🌊','Тяга — как волна','Она нарастает, достигает пика и спадает. Обычно это занимает 15–20 минут.',7,'a-wave'),
+      sc('🧠','Почему так','Мозг привык к быстрому «сигналу награды» и просит его снова. Это привычка, а не твоя слабость.',8,'a-pulse'),
+      sc('👀','Шаг 1. Заметь','Скажи про себя: «Это тяга. Она придёт и уйдёт». Не спорь с ней и не поддавайся — просто наблюдай.',8,'a-float'),
+      sc('📍','Шаг 2. Найди её в теле','Сжатая грудь? Сухость во рту? Напряжённые плечи? Назови ощущение — волна теряет силу.',8,'a-pulse'),
+      sc('🌬️','Шаг 3. Дыши','Вдох на 4 счёта, выдох на 6. Пять кругов. Длинный выдох успокаивает.',7,'a-breath'),
+      sc('🚶','Шаг 4. Смени обстановку','Умойся, выпей воды, выйди на улицу. Даже 10 минут движения меняют состояние.',7,'a-float'),
+      sc('⏳','Шаг 5. Поставь таймер','Реши: пока идут 20 минут, я ничего не решаю. Потом можно подумать снова — чаще всего уже не хочется.',9,'a-pulse')]},
+  env_guide:{type:'guide',emoji:'🧭',title:'Фильтр окружения',price:100,
+    desc:'Как выбирать компанию и роли, чтобы трезвость не мешала общению.',html:`
     <p>Трудно сказать «нет», когда пьют все вокруг. Рабочая стратегия:</p>
     <ul>
       <li><b>Готовый скрипт.</b> Заранее заготовь короткую, скучную фразу вроде «мне нельзя, я на тренировках» и просто повторяй её.</li>
       <li><b>Смена роли.</b> Возьми на себя роль водителя, фотографа или организатора — человека, чья трезвость выгодна компании прямо сейчас.</li>
       <li><b>Постепенный выход.</b> Если тебя ценят только с бутылкой в руке — это не друзья, а собутыльники. Начни постепенно заменять такие встречи на другие активности.</li>
     </ul>`},
-  ai_trainer:{emoji:'🧩',title:'Разбор сложных ситуаций',price:200,html:`
+  ai_trainer:{type:'guide',emoji:'🧩',title:'Разбор сложных ситуаций',price:200,
+    desc:'Готовые фразы на случай давления — от подкалываний до «ну одну-то».',html:`
     <p>Что сказать, когда давят. Выбери фразу, которая звучит как ты, и повторяй её спокойно — без оправданий.</p>
     <ul>
       <li><b>«Выпей, да ладно тебе».</b> «Не хочу. Что там по плану на вечер?»</li>
@@ -323,6 +390,33 @@ const ITEMS = {
       <li><b>Нет сил спорить.</b> «Мне пора, всем пока» — уходить можно в любой момент.</li>
     </ul>
     <p class="muted">Если давление не прекращается — это повод пересмотреть компанию, а не себя.</p>`},
+  say_no:{type:'lesson',emoji:'🛡️',title:'Как отказать и не потерять лицо',price:150,video:'',
+    desc:'Четыре способа сказать «нет» так, чтобы не было ссоры и оправданий.',
+    task:'Выбери одну фразу и скажи её вслух 3 раза — тогда в нужный момент она выйдет сама.',
+    scenes:[
+      sc('🍻','Знакомая ситуация','Тебе протягивают стакан: «Да ладно, одну-то!». Что сказать?',6,'a-float'),
+      sc('🧱','Главное правило','Отказ — не объяснение. Чем меньше оправданий, тем меньше поводов спорить.',7,'a-pulse'),
+      sc('💬','Способ 1. Коротко и спокойно','«Не, спасибо.» Без извинений. И сразу смени тему: «Что там по плану?»',7,'a-float'),
+      sc('🔁','Способ 2. Как заезженная пластинка','Если давят — повтори то же самое тем же тоном. Обычно трёх раз хватает, чтобы отстали.',8,'a-pulse'),
+      sc('🧃','Способ 3. Займи руки','С чашкой, соком или водой в руке вопросов задают намного меньше.',6,'a-float'),
+      sc('😄','Способ 4. Лёгкий тон','«Я на режиме, у меня тренировка» — с улыбкой это звучит как факт, а не как оправдание.',7,'a-pulse'),
+      sc('🚪','Если давление растёт','Ты можешь уйти. «Мне пора» — полноценная причина, объяснять ничего не нужно.',7,'a-float'),
+      sc('🤝','Договорись заранее','Найди одного человека, который знает, что ты не пьёшь. С союзником отказывать заметно проще.',8,'a-pulse')]},
+  brain_truth:{type:'lesson',emoji:'🧠',title:'Что алкоголь делает с мозгом подростка',price:150,video:'',
+    desc:'Спокойный разбор без запугивания: память, сон, настроение и самоконтроль.',
+    task:'Отметь сегодня сон и настроение в разделе «Настроение» — через неделю сравни.',
+    note:'Это общая информация, а не медицинская консультация.',
+    cta:{s:'mood',t:'📈 Открыть настроение'},
+    scenes:[
+      sc('🧠','Мозг ещё достраивается','Он продолжает развиваться примерно до 25 лет — особенно участки, отвечающие за самоконтроль и планирование.',9,'a-pulse'),
+      sc('⚡','Почему это важно','Чем раньше человек знакомится с алкоголем, тем выше риск, что привычка закрепится.',8,'a-float'),
+      sc('📚','Память и учёба','Алкоголь мешает запоминанию: информация хуже закрепляется, учиться становится труднее.',7,'a-pulse'),
+      sc('😴','Сон','Алкоголь может помочь быстрее уснуть, но делает сон поверхностным. Утром ты не отдохнувший(-ая).',8,'a-float'),
+      sc('🎭','Настроение','Он кажется средством от тревоги, но потом тревога и подавленность часто становятся сильнее.',8,'a-pulse'),
+      sc('🌱','Хорошая новость','Мозг подростка гибкий. Чем раньше ты сокращаешь или бросаешь, тем больше шансов, что последствия будут небольшими.',9,'a-float'),
+      sc('🎯','Не нужно быть идеальным','Каждый день без алкоголя — вклад в твой самоконтроль, память и сон.',7,'a-pulse')]},
+  night_plan:{type:'tool',emoji:'🗓️',title:'Мой план на вечер',price:250,
+    desc:'Личный план на вечеринку: фраза отказа, запасной выход и человек, которому можно написать.'},
 };
 
 /* Помощник в чате работает по ключевым словам — это не нейросеть. */
@@ -390,6 +484,7 @@ const defaults = () => ({
   balance:20, lastBonus:0, soberDays:0, soberSince:null, relapses:0,
   inv:[], done:{A:'',B:'',C:''}, history:[], milestones:[], journal:[],
   moods:{}, reasons:[], weeklySpend:0, cravings:0, craving:null, theme:'auto',
+  savedBase:0, savedFrom:0, goal:null, lessonDone:[], plan:null,
 });
 let memStore = null;
 function load(){
@@ -434,9 +529,21 @@ function leftStr(ms){
   const h=Math.floor(ms/36e5), m=Math.floor((ms%36e5)/6e4);
   return h>0 ? `${h} ч ${m} мин` : `${m} мин`;
 }
+/* Сэкономлено = накопленное до последнего изменения + сколько набежало с тех пор.
+   Срыв или смена суммы «замораживают» уже накопленное, а не обнуляют его. */
 function savedMoney(){
-  if(!S.soberSince||!S.weeklySpend) return 0;
-  return Math.round(streakMs()/864e5 * S.weeklySpend/7);
+  const base = S.savedBase || 0;
+  if(!S.soberSince || !S.weeklySpend) return Math.round(base);
+  const from = Math.max(S.savedFrom || 0, S.soberSince);
+  return Math.round(base + Math.max(0, Date.now()-from)/864e5 * S.weeklySpend/7);
+}
+const fmtMoney = n => Math.round(n).toLocaleString('ru-RU') + ' ' + CONFIG.currency;
+function setWeekly(v){
+  v = Math.max(0, Math.min(1e6, Math.round(v)||0));
+  const old = S.weeklySpend || 0;
+  if(old>0){ S.savedBase = savedMoney(); S.savedFrom = Date.now(); }
+  else if(S.savedFrom){ S.savedFrom = Date.now(); }
+  S.weeklySpend = v; save();
 }
 function todayMood(){ return S.moods[dateKey()] || 0; }
 
@@ -458,11 +565,13 @@ function checkMilestones(announce){
 
 /* ═════════════ НАВИГАЦИЯ ═════════════ */
 const TAB_OF = {home:'home',tip:'home',mood:'home',breathe:'home',craving:'home',map:'home',shop:'home',reasons:'home',
-  quiz:'quiz',quizrun:'quiz',quizres:'quiz',journal:'journal',chat:'chat',profile:'profile',item:'profile',sos:''};
-const HIDE_NAV = ['sos','quizrun','breathe'];
+  quiz:'quiz',quizrun:'quiz',quizres:'quiz',journal:'journal',chat:'chat',profile:'profile',item:'profile',savings:'home',lesson:'home',plan:'home',sos:''};
+const HIDE_NAV = ['sos','quizrun','breathe','lesson'];
 let cur = {name:'home'}; const stack = [];
 let CT = null;               // таймер экрана «тяга»
 let BR = {id:0,pat:'478',running:false};
+let LP = {t:null,k:null,i:0,el:0,paused:false,done:false};   // видео-урок
+let SHOP_F = 'all';          // фильтр в «Материалах»
 let Q = null;                // текущий тест
 let loc = null;              // геолокация (только в памяти)
 let tipI = null;
@@ -472,14 +581,19 @@ let pendingFn = null;
 function go(name,arg,replace){ if(!replace) stack.push(cur); cur={name,arg}; render(); }
 function back(){ const p=stack.pop(); cur=p||{name:'home'}; render(); }
 function tab(t){ stack.length=0; cur={name:t}; render(); }
+/* подсветка вкладки: материал/урок/план принадлежат той вкладке, откуда их открыли */
+function tabOf(){
+  if(['item','lesson','plan'].includes(cur.name)){ const p=stack[stack.length-1]; return p ? TAB_OF[p.name] : 'home'; }
+  return TAB_OF[cur.name];
+}
 
 if(tg && tg.BackButton){ try{ tg.BackButton.onClick(back); }catch(e){} }
 
 function render(){
-  BR.id++; BR.running=false; clearInterval(CT);
+  BR.id++; BR.running=false; clearInterval(CT); clearInterval(LP.t);
   const fn = screens[cur.name] || screens.home;
   $('#view').innerHTML = fn(cur.arg);
-  const tabName = TAB_OF[cur.name];
+  const tabName = tabOf();
   document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.t===tabName));
   $('#nav').style.display = HIDE_NAV.includes(cur.name) ? 'none' : 'flex';
   $('#sosPill').style.visibility = cur.name==='sos' ? 'hidden' : 'visible';
@@ -537,7 +651,10 @@ screens.home = () => {
     ${moodRow()}
   </section>
 
-  ${money>0 ? `<section class="card row"><div><h3>💰 Сэкономлено</h3><span class="muted">по твоим обычным тратам</span></div><div class="price" style="font-size:22px">${money.toLocaleString('ru-RU')} ${CONFIG.currency}</div></section>` : ''}
+  <button class="card tap" data-act="go" data-s="savings">
+    <div class="row"><div><h3>💰 Сэкономлено</h3><span class="muted">${S.weeklySpend ? (S.goal ? '🎯 '+esc(S.goal.name)+' · '+Math.min(100,Math.round(money/S.goal.cost*100))+'%' : 'по твоим обычным тратам') : 'Укажи, сколько уходило на алкоголь, — и увидишь сумму'}</span></div>
+    <div class="price" id="hMoney" style="font-size:22px">${S.weeklySpend ? fmtMoney(money) : 'Настроить ›'}</div></div>
+  </button>
 
   <div class="grid">
     <button class="tile" data-act="go" data-s="breathe"><span class="e">🌬️</span><span class="t">Дышать</span></button>
@@ -691,19 +808,148 @@ screens.map = () => `
   <div class="sp"></div>
   ${MAP_CATS.map(c=>`<button class="card tap" data-act="open" data-u="${esc(mapLink(c[2]))}"><div class="row"><span><span style="font-size:24px">${c[0]}</span>&nbsp; ${c[1]}</span><span>↗</span></div></button>`).join('')}`;
 
-/* ── Магазин ── */
-screens.shop = () => `
+/* ── Материалы ── */
+const TYPE_LABEL = {lesson:'🎬 Видео-урок',guide:'📖 Гайд',tool:'🧰 Инструмент'};
+const itemDur = it => it.scenes ? '≈ '+Math.max(1,Math.round(it.scenes.reduce((s,x)=>s+x.sec,0)/60))+' мин' : it.type==='tool' ? '≈ 5 мин' : '≈ 2 мин чтения';
+const itemDone = k => ITEMS[k].type==='lesson' ? S.lessonDone.includes(k) : ITEMS[k].type==='tool' ? !!S.plan : false;
+const itemBtn = k => { const it=ITEMS[k]; return it.type==='lesson' ? (itemDone(k)?'🔁 Смотреть снова':'▶️ Смотреть') : it.type==='tool' ? (S.plan?'✏️ Изменить план':'🗓️ Составить') : '📖 Читать'; };
+function openItem(k){
+  const it=ITEMS[k]; if(!it) return;
+  if(it.type==='tool') go('plan',k);
+  else if(it.type==='lesson' && !it.video) go('lesson',k);
+  else go('item',k);
+}
+screens.shop = () => {
+  const keys = Object.keys(ITEMS).filter(k => SHOP_F==='all' || ITEMS[k].type===SHOP_F).sort((x,y)=>ITEMS[x].price-ITEMS[y].price);
+  const FILTERS = [['all','Все'],['lesson','🎬 Видео'],['tool','🧰 Инструменты'],['guide','📖 Гайды']];
+  return `
   <h1>Материалы 🛍️</h1>
   <section class="card inv row"><span>Монеты поддержки</span><b style="font:700 24px 'Unbounded',sans-serif">${S.balance} ◇</b></section>
-  <p class="muted">Монеты начисляются за отметки трезвости, тесты, награды и пережитую тягу. Обменивай их на практические инструменты.</p>
-  ${Object.entries(ITEMS).map(([k,it])=>{
-    const owned = S.inv.includes(k);
+  <details class="card"><summary>💡 Как заработать монеты</summary>
+    <p class="muted" style="margin:0">✅ Отметка трезвости — +30 ◇ раз в сутки<br>🧠 Каждый тест — +50 ◇ (раз в день)<br>⏳ Пережитая тяга — +15 ◇<br>🏆 Награды за серию дней — до +180 ◇</p></details>
+  <div>${FILTERS.map(f=>`<button class="chip ${SHOP_F===f[0]?'on':''}" data-act="shopf" data-f="${f[0]}">${f[1]}</button>`).join('')}</div>
+  <div class="sp"></div>
+  ${keys.map(k=>{
+    const it=ITEMS[k], owned=S.inv.includes(k), enough=S.balance>=it.price;
     return `<section class="card">
-      <div class="row"><h3>${it.emoji} ${esc(it.title)}</h3>${owned?'':`<span class="price">${it.price} ◇</span>`}</div>
-      ${owned ? `<button class="btn ghost sm" data-act="read" data-k="${k}">📖 Читать</button>`
-              : `<button class="btn sm" data-act="buy" data-k="${k}" ${S.balance<it.price?'disabled':''}>${S.balance<it.price?'Не хватает монет':'Получить'}</button>`}
+      <div class="row"><span class="tag">${TYPE_LABEL[it.type]}</span><span class="muted">${itemDur(it)}</span></div>
+      <h3 style="font-size:18px;margin:10px 0 4px">${it.emoji} ${esc(it.title)}</h3>
+      <p class="muted" style="margin:0 0 12px">${esc(it.desc)}</p>
+      ${owned ? `<div class="row"><span class="muted">${itemDone(k)?'✅ Пройдено':'Открыто'}</span><button class="btn sm" data-act="read" data-k="${k}">${itemBtn(k)}</button></div>`
+        : enough ? `<div class="row"><span class="price">${it.price} ◇</span><button class="btn sm" data-act="buy" data-k="${k}">Открыть</button></div>`
+        : `<div class="bar" style="margin-bottom:8px"><i style="width:${Math.round(S.balance/it.price*100)}%"></i></div><div class="row"><span class="muted">Не хватает ${it.price-S.balance} ◇</span><span class="price">${it.price} ◇</span></div>`}
     </section>`;}).join('')}`;
-screens.item = k => { const it=ITEMS[k]; return `<h1>${it.emoji} ${esc(it.title)}</h1><section class="card rich">${it.html}</section><button class="btn ghost" data-act="back">Назад</button>`; };
+};
+
+const videoHtml = src => /\.(mp4|webm)(\?|$)/i.test(src)
+  ? `<video class="vid" src="${esc(src)}" controls playsinline preload="metadata"></video>`
+  : `<div class="vidw"><iframe src="${esc(src)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen loading="lazy"></iframe></div>`;
+screens.item = k => { const it=ITEMS[k]; return `<h1>${it.emoji} ${esc(it.title)}</h1>
+  ${it.video ? videoHtml(it.video) : ''}
+  ${it.scenes ? `<button class="btn ${it.video?'ghost':''}" data-act="lesson" data-k="${k}">▶️ Смотреть по слайдам</button><div class="sp"></div>` : ''}
+  ${it.task ? `<section class="card"><h3>📌 Задание на сегодня</h3><p style="margin:0">${esc(it.task)}</p></section>` : ''}
+  ${it.html ? `<section class="card rich">${it.html}</section>` : ''}
+  <button class="btn ghost" data-act="back">Назад</button>`; };
+
+/* ── Видео-урок (анимированные слайды) ── */
+screens.lesson = k => { const it=ITEMS[k]; return `<div class="lp">
+  <div class="lp-seg">${it.scenes.map((_,i)=>`<i><b id="sg${i}"></b></i>`).join('')}</div>
+  <div class="lp-head"><span>${it.emoji} ${esc(it.title)}</span><button class="link" data-act="back">✕ Закрыть</button></div>
+  <div class="lp-stage" id="lpStage"><div id="lpScene"></div>
+    <button class="lp-z l" data-act="lpprev" aria-label="Назад"></button><button class="lp-z r" data-act="lpnext" aria-label="Дальше"></button></div>
+  <div class="lp-ctl"><button class="btn ghost sm" data-act="lpprev" aria-label="Назад">‹</button><button class="btn ghost sm" id="lpPause" data-act="lppause">⏸ Пауза</button><button class="btn ghost sm" data-act="lpnext" aria-label="Дальше">›</button></div>
+  ${it.note ? `<p class="muted center" style="margin-top:12px">${esc(it.note)}</p>` : ''}
+</div>`; };
+after.lesson = () => { LP.k=cur.arg; LP.paused=false; lpShow(0); LP.t=setInterval(lpTick,100); };
+function lpShow(i){
+  const it=ITEMS[LP.k]; if(!it) return;
+  const s=it.scenes[i]; LP.i=i; LP.el=0; LP.done=false;
+  const st=$('#lpStage'); if(st) st.classList.remove('done');
+  const box=$('#lpScene'); if(!box) return;
+  box.innerHTML=`<div class="sc"><div class="sc-e ${s.a||'a-pulse'}">${s.e}</div><h2 class="sc-t">${esc(s.t)}</h2><p class="sc-s">${esc(s.s)}</p></div>`;
+  it.scenes.forEach((_,j)=>{ const b=$('#sg'+j); if(b) b.style.width = j<i ? '100%' : '0%'; });
+}
+function lpTick(){
+  if(LP.paused || LP.done || document.hidden) return;
+  const it=ITEMS[LP.k]; if(!it) return;
+  const s=it.scenes[LP.i]; LP.el+=100;
+  const b=$('#sg'+LP.i); if(b) b.style.width=Math.min(100,LP.el/(s.sec*10))+'%';
+  if(LP.el>=s.sec*1000) lpNext();
+}
+function lpNext(){ const it=ITEMS[LP.k]; if(!it||LP.done) return; if(LP.i<it.scenes.length-1) lpShow(LP.i+1); else lpFinish(); }
+function lpGo(i){ const it=ITEMS[LP.k]; if(!it) return; lpShow(Math.max(0,Math.min(it.scenes.length-1,i))); }
+function lpFinish(){
+  const it=ITEMS[LP.k]; LP.done=true;
+  it.scenes.forEach((_,j)=>{ const b=$('#sg'+j); if(b) b.style.width='100%'; });
+  if(!S.lessonDone.includes(LP.k)){ S.lessonDone.push(LP.k); save(); }
+  hap('success');
+  const st=$('#lpStage'); if(st) st.classList.add('done');
+  const box=$('#lpScene'); if(!box) return;
+  box.innerHTML=`<div class="sc"><div class="sc-e a-pop">🎉</div><h2 class="sc-t">Урок пройден</h2>
+    ${it.task ? `<section class="card" style="text-align:left"><h3>📌 Задание на сегодня</h3><p style="margin:0">${esc(it.task)}</p></section>` : ''}
+    ${it.cta ? `<button class="btn" data-act="go" data-s="${it.cta.s}">${esc(it.cta.t)}</button><div class="sp"></div>` : ''}
+    <button class="btn ghost" data-act="lprestart">↺ Смотреть ещё раз</button>
+    <button class="btn ${it.cta?'ghost':''}" data-act="back">К материалам</button></div>`;
+}
+
+/* ── Инструмент: «Мой план на вечер» ── */
+screens.plan = () => {
+  const P = S.plan || {};
+  return `<h1>🗓️ Мой план на вечер</h1>
+  <p class="muted">Заполни заранее, пока спокойно. Когда начнётся давление, думать уже не придётся — просто действуй по плану.</p>
+  ${S.plan ? `<section class="card inv"><h3>Мой план${P.event?': '+esc(P.event):''}</h3>
+    ${P.phrase?`<p style="margin:0 0 6px">🗣 ${esc(P.phrase)}</p>`:''}
+    ${P.exit?`<p style="margin:0 0 6px">🚪 ${esc(P.exit)}</p>`:''}
+    ${P.ally?`<p style="margin:0 0 6px">🤝 Напишу: ${esc(P.ally)}</p>`:''}
+    <p class="muted" style="margin:6px 0 0">Открой этот экран перед выходом из дома.</p></section>` : ''}
+  <section class="card"><h3>Куда идёшь?</h3><input type="text" id="plEvent" maxlength="60" value="${esc(P.event||'')}" placeholder="Например: день рождения друга"></section>
+  <section class="card"><h3>Моя фраза-отказ</h3>
+    <div>${PLAN_PHRASES.map((p,i)=>`<button class="chip" data-act="plphrase" data-i="${i}">${esc(p)}</button>`).join('')}</div>
+    <input type="text" id="plPhrase" maxlength="80" value="${esc(P.phrase||'')}" placeholder="Своими словами…"></section>
+  <section class="card"><h3>Мой выход</h3><span class="muted">Что сделаю, если станет тяжело</span>
+    <div style="margin-top:8px">${PLAN_EXITS.map((p,i)=>`<button class="chip" data-act="plexit" data-i="${i}">${esc(p)}</button>`).join('')}</div>
+    <input type="text" id="plExit" maxlength="80" value="${esc(P.exit||'')}" placeholder="Своими словами…"></section>
+  <section class="card"><h3>Мой союзник</h3><span class="muted">Кому можно написать или позвонить</span>
+    <div class="sp"></div><input type="text" id="plAlly" maxlength="40" value="${esc(P.ally||'')}" placeholder="Имя"></section>
+  <button class="btn" data-act="plsave">Сохранить план</button>
+  <button class="btn ghost" data-act="back">Назад</button>`;
+};
+
+/* ── Сэкономлено ── */
+screens.savings = () => {
+  const money=savedMoney(), w=S.weeklySpend||0, d=streakDays(), g=S.goal, cur_=CONFIG.currency;
+  let goalHtml;
+  if(g){
+    const pct=Math.min(100, money/g.cost*100), left=g.cost-money;
+    const days = (w>0 && left>0) ? Math.ceil(left/(w/7)) : 0;
+    goalHtml = `<section class="card"><div class="row"><h3>🎯 ${esc(g.name)}</h3><button class="link" data-act="goaldel">Убрать</button></div>
+      <div class="bar" style="margin:6px 0 8px"><i style="width:${pct}%"></i></div>
+      <div class="row"><span class="muted">${money>=g.cost ? '🎉 Цель достигнута!' : 'Осталось '+fmtMoney(left)}</span><span class="muted">${fmtMoney(g.cost)}</span></div>
+      ${days ? `<span class="muted">При таком темпе — примерно через ${days} ${plural(days,'день','дня','дней')}</span>` : ''}</section>`;
+  } else {
+    goalHtml = `<section class="card"><h3>🎯 На что копишь?</h3><span class="muted">Цель помогает держаться: видишь, сколько осталось.</span>
+      <div class="sp"></div><input type="text" id="gName" maxlength="40" placeholder="Например: новые наушники">
+      <div class="sp"></div><input type="number" inputmode="numeric" min="0" id="gCost" placeholder="Сколько стоит, ${cur_}">
+      <div class="sp"></div><button class="btn" data-act="goalsave">Поставить цель</button></section>`;
+  }
+  return `<h1>Сэкономлено 💰</h1>
+  <section class="card inv"><div class="hero-top">Ты не потратил(а) на алкоголь</div>
+    <div class="big-money" id="svAmt">${fmtMoney(money)}</div>
+    <div class="hero-next">${S.soberSince ? 'за '+d+' '+plural(d,'день','дня','дней')+' в текущей серии' : 'Подсчёт начнётся с первой отметки на главной'}${S.savedBase>0 ? '. Накопленное сохраняется даже после срыва' : ''}</div></section>
+  ${w>0 ? `<div class="stats">
+    <div class="stat"><b>${Math.round(w/7).toLocaleString('ru-RU')}</b><span>в день, ${cur_}</span></div>
+    <div class="stat"><b>${Math.round(w*30/7).toLocaleString('ru-RU')}</b><span>в месяц, ${cur_}</span></div>
+    <div class="stat"><b>${Math.round(w*365/7).toLocaleString('ru-RU')}</b><span>в год, ${cur_}</span></div></div>` : ''}
+  <section class="card"><h3>Сколько уходило в неделю</h3><span class="muted">Выбери или впиши свою сумму. Данные остаются на этом устройстве.</span>
+    <div style="margin:10px 0 4px">${[500,1000,2000,3000,5000].map(v=>`<button class="chip ${w===v?'on':''}" data-act="spendset" data-v="${v}">${v.toLocaleString('ru-RU')} ${cur_}</button>`).join('')}</div>
+    <div class="row"><button class="btn ghost sm" data-act="spendstep" data-d="-100">−100</button>
+      <input type="number" inputmode="numeric" min="0" id="spendIn" value="${w||''}" placeholder="0" style="text-align:center">
+      <button class="btn ghost sm" data-act="spendstep" data-d="100">+100</button></div>
+    <div class="sp"></div><button class="btn" data-act="spendsave">Сохранить</button></section>
+  ${goalHtml}
+  <p class="muted">Это расчёт по сумме, которую ты указал(а): приложение ничего не списывает и не откладывает. Хочешь, чтобы деньги были настоящими — переводи эту сумму в копилку сам(а).</p>
+  <button class="btn ghost" data-act="back">Назад</button>`;
+};
 
 /* ── Причины ── */
 screens.reasons = () => `
@@ -818,14 +1064,10 @@ screens.profile = () => {
   <h2>Награды</h2>
   <div class="badges">${MILESTONES.map(m=>`<div class="badge ${S.milestones.includes(m[0])?'':'lock'}"><span class="e">${m[1]}</span><span>${esc(m[2])}</span></div>`).join('')}</div>
   <h2>Мои материалы</h2>
-  ${S.inv.length ? S.inv.map(k=>`<button class="card tap" data-act="read" data-k="${k}"><div class="row"><span>${ITEMS[k].emoji} ${esc(ITEMS[k].title)}</span><span>›</span></div></button>`).join('')
+  ${S.inv.filter(k=>ITEMS[k]).length ? S.inv.filter(k=>ITEMS[k]).map(k=>`<button class="card tap" data-act="read" data-k="${k}"><div class="row"><span>${ITEMS[k].emoji} ${esc(ITEMS[k].title)}</span><span>›</span></div></button>`).join('')
     : `<section class="card muted">Пока нет. Загляни в <button class="link" data-act="go" data-s="shop">«Материалы»</button>.</section>`}
   <h2>Настройки</h2>
-  <section class="card">
-    <h3>💰 Сколько в неделю уходило на алкоголь, ${CONFIG.currency}</h3>
-    <p class="muted">Необязательно. Нужно только для подсчёта сэкономленного — остаётся на устройстве.</p>
-    <div class="row"><input type="number" inputmode="numeric" min="0" id="spendIn" value="${S.weeklySpend||''}" placeholder="0"><button class="btn sm" data-act="spend">OK</button></div>
-  </section>
+  <button class="card tap" data-act="go" data-s="savings"><div class="row"><span>💰 Копилка: траты в неделю и цель</span><span>›</span></div></button>
   <button class="card tap" data-act="theme"><div class="row"><span>🌗 Тема: ${S.theme==='auto'?'как в Telegram':S.theme==='dark'?'тёмная':'светлая'}</span><span>›</span></div></button>
   <button class="card tap" data-act="relapseask"><div class="row"><span>🔄 Я сорвался(-ась) — начать заново</span><span>›</span></div></button>
   <button class="card tap" data-act="erase"><div class="row"><span>🗑 Стереть все мои данные</span><span>›</span></div></button>
@@ -865,13 +1107,30 @@ const A = {
       {timeout:10000});
   },
 
+  shopf(d){ SHOP_F=d.f; render(); },
   buy(d){
     const it=ITEMS[d.k];
-    if(S.inv.includes(d.k)) return;
-    if(S.balance<it.price){ toast('Пока не хватает монет'); hap('warning'); return; }
-    S.balance-=it.price; S.inv.push(d.k); save(); hap('success'); go('item',d.k);
+    if(!it || S.inv.includes(d.k)) return;
+    if(S.balance<it.price){ toast('Не хватает '+(it.price-S.balance)+' ◇'); hap('warning'); return; }
+    ask('Открыть материал?', `«${esc(it.title)}» — ${it.price} ◇.<br>После покупки у тебя останется ${S.balance-it.price} ◇.`, 'Открыть за '+it.price+' ◇', ()=>{
+      if(S.inv.includes(d.k) || S.balance<it.price) return;
+      S.balance-=it.price; S.inv.push(d.k); save(); hap('success'); openItem(d.k);
+    });
   },
-  read(d){ go('item',d.k); },
+  read(d){ openItem(d.k); },
+  lesson(d){ go('lesson',d.k); },
+  lpnext(){ lpNext(); },
+  lpprev(){ lpGo(LP.done ? LP.i : LP.i-1); },
+  lprestart(){ lpGo(0); },
+  lppause(){ LP.paused=!LP.paused; const b=$('#lpPause'); if(b) b.textContent = LP.paused ? '▶️ Продолжить' : '⏸ Пауза'; },
+  plphrase(d){ const el=$('#plPhrase'); if(el) el.value=PLAN_PHRASES[+d.i]; },
+  plexit(d){ const el=$('#plExit'); if(el) el.value=PLAN_EXITS[+d.i]; },
+  plsave(){
+    const g=id=>{ const e=$(id); return e ? e.value.trim().slice(0,80) : ''; };
+    const p={event:g('#plEvent'),phrase:g('#plPhrase'),exit:g('#plExit'),ally:g('#plAlly')};
+    if(!p.phrase){ toast('Выбери или напиши фразу-отказ'); hap('warning'); return; }
+    S.plan=p; save(); hap('success'); render(); toast('🗓️ План сохранён');
+  },
 
   reasonadd(){
     const el=$('#reasonIn'); const v=el && el.value.trim(); if(!v) return;
@@ -881,8 +1140,8 @@ const A = {
   reasondel(d){ S.reasons.splice(+d.i,1); save(); render(); },
 
   relapseask(){
-    ask('Это можно пройти','Срыв — не провал и не конец пути, а часть процесса, через который проходят многие. Счётчик можно честно обнулить и продолжить с чистого листа. Тесты, дневник, монеты и материалы останутся.','Да, обнулить счётчик',()=>{
-      S.soberSince=Date.now(); S.relapses++; save(); hap('success'); tab('home'); toast('Счётчик обнулён. Я рядом — ты справишься.');
+    ask('Это можно пройти','Срыв — не провал и не конец пути, а часть процесса, через который проходят многие. Счётчик можно честно обнулить и продолжить с чистого листа. Тесты, дневник, монеты, материалы и накопленная сумма «Сэкономлено» останутся.','Да, обнулить счётчик',()=>{
+      S.savedBase=savedMoney(); S.savedFrom=Date.now(); S.soberSince=Date.now(); S.relapses++; save(); hap('success'); tab('home'); toast('Счётчик обнулён. Я рядом — ты справишься.');
     });
   },
 
@@ -914,7 +1173,15 @@ const A = {
 
   chatsend(){ chatSend(); },
 
-  spend(){ const el=$('#spendIn'); S.weeklySpend=Math.max(0,parseInt(el.value,10)||0); save(); hap('light'); toast('Сохранено'); },
+  spendset(d){ setWeekly(+d.v); hap('light'); render(); toast('Сохранено'); },
+  spendstep(d){ const el=$('#spendIn'); setWeekly(Math.max(0,(parseInt(el&&el.value,10)||0)+(+d.d))); hap('light'); render(); },
+  spendsave(){ const el=$('#spendIn'); setWeekly(parseInt(el&&el.value,10)||0); hap('success'); render(); toast('Сохранено'); },
+  goalsave(){
+    const n=$('#gName'), c=$('#gCost'); const name=n&&n.value.trim(), cost=parseInt(c&&c.value,10)||0;
+    if(!name||cost<=0){ toast('Впиши, на что копишь и сколько это стоит'); hap('warning'); return; }
+    S.goal={name:name.slice(0,40),cost:Math.min(cost,1e8)}; save(); hap('success'); render(); toast('🎯 Цель сохранена');
+  },
+  goaldel(){ S.goal=null; save(); render(); },
   theme(){ S.theme = S.theme==='auto'?'dark':S.theme==='dark'?'light':'auto'; save(); applyTheme(); render(); },
   erase(){
     ask('Стереть все данные?','Прогресс, дневник, тесты, монеты и причины будут удалены с этого устройства навсегда.','Стереть всё',()=>{
@@ -937,7 +1204,10 @@ document.addEventListener('keydown', e => {
 
 /* живой счётчик на главной */
 setInterval(()=>{
-  if(cur.name!=='home' || !S.soberSince) return;
+  if(cur.name==='savings'){ const a=$('#svAmt'); if(a) a.textContent=fmtMoney(savedMoney()); return; }
+  if(cur.name!=='home') return;
+  const m=$('#hMoney'); if(m && S.weeklySpend) m.textContent=fmtMoney(savedMoney());
+  if(!S.soberSince) return;
   const l=$('#hLive'); if(l) l.textContent=liveStr();
   const d=streakDays(), el=$('#hDays');
   if(el && el.textContent!==String(d)){ el.textContent=d; const u=$('#hUnit'); if(u) u.textContent=plural(d,'день','дня','дней'); }
@@ -950,3 +1220,4 @@ checkMilestones(true);
 </script>
 </body>
 </html>
+  
