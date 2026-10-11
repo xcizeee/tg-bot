@@ -306,6 +306,91 @@ const SITUATIONS = {
   ],
 };
 
+/* Банк вопросов: в каждом тесте по 30 ситуаций, при каждом прохождении берутся 10 случайных
+   (сначала те, что давно не попадались), а варианты ответов перемешиваются. Править ничего не нужно. */
+const MORE_Q = {
+  A:[
+    'Ты возвращаешься домой мимо магазина, где раньше покупал(а) алкоголь.',
+    'Ссора с родителями закончилась хлопком двери, и хочется «выключить» эмоции.',
+    'Ты листаешь старые фото с вечеринок, и хочется вернуться в то настроение.',
+    'Тебе обидно после неудачи на экзамене или соревновании.',
+    'Друг пишет: «Вечером у меня, все свои, без тебя будет скучно».',
+    'Ты не можешь уснуть и думаешь, что глоток помог бы расслабиться.',
+    'Заканчивается тяжёлая неделя, и кажется, что ты «заслужил(а)» выпить.',
+    'На концерте или фестивале вокруг все с напитками, и тебе предлагают присоединиться.',
+    'Ты чувствуешь злость и не знаешь, куда её деть.',
+    'Кто-то говорит: «Ты же раньше пил(а), что изменилось?»',
+    'Дома никого нет, а у родных в холодильнике стоит алкоголь.',
+    'Тебе кажется, что без выпивки не получится познакомиться с понравившимся человеком.',
+    'После хорошей новости хочется отметить «как раньше».',
+    'Тебе грустно из-за расставания или ссоры с близким другом.',
+    'Ты замечаешь, что вечер пятницы у тебя ассоциируется только с пивом.',
+    'Знакомый уверяет, что «лёгкий» алкоголь ничего не изменит.',
+    'Ты устал(а) от постоянных отказов и думаешь: «Один раз ничего не изменит».',
+    'Тебе скучно в дороге, а попутчики открывают бутылки.',
+    'Ты переживаешь, что тебя не примет новая компания.',
+    'На семейном празднике взрослые настойчиво предлагают «хотя бы глоточек».',
+  ],
+  B:[
+    'Одноклассники собираются после уроков «просто посидеть» с алкоголем.',
+    'В чате группы все обсуждают, кто что пил, и ждут твою историю.',
+    'Тебя называют «скучным(-ой)», потому что ты отказываешься.',
+    'На дне рождения именинник обижается, что ты не выпил(а) с ним.',
+    'Старший брат или сестра предлагает попробовать, чтобы «не выглядеть ребёнком».',
+    'Друзья шутят, что без алкоголя тебя не берут в поездку.',
+    'Тебе пишут в мессенджере: «Ты с нами или как?» — и показывают бутылки.',
+    'Новая компания проверяет тебя: «Выпьешь — станешь своим».',
+    'На выпускном все договорились «немного выпить для настроения».',
+    'Приятель настаивает налить тебе «хотя бы символически».',
+    'Кто-то снимает видео и просит тебя попасть в кадр с бокалом.',
+    'Человек, который тебе нравится, предлагает выпить вместе.',
+    'Ты слышишь за спиной, что ты «слишком правильный(-ая)».',
+    'Друзья затеяли игру, где проигравший обязан выпить.',
+    'Тебя зовут на пикник, и ты знаешь, что там будет много алкоголя.',
+    'Лучший друг обижается, что ты стал(а) реже ходить на вечеринки.',
+    'На даче взрослые наливают всем подряд, включая подростков.',
+    'Приятель говорит: «Никто не узнает, если ты выпьешь».',
+    'Тебя просят «поддержать компанию», потому что одному пить неловко.',
+    'Одноклассники спорят, что ты не выдержишь и нарушишь свой режим.',
+  ],
+  C:[
+    'Ты замечаешь, что снова думаешь: «Я ничего не добьюсь, так какая разница».',
+    'Ты сорвался(-ась) один раз и думаешь, что всё потеряно.',
+    'Тебе кажется, что другие справляются легче, а ты один(одна) такой.',
+    'Ты не хочешь рассказывать близким о трудностях, боясь осуждения.',
+    'Тебя накрывает чувство вины за прошлые поступки.',
+    'Дни идут, но ты не видишь изменений и теряешь интерес.',
+    'Ты ловишь себя на мысли, что трезвость — это «наказание».',
+    'После хорошей недели тебе хочется «наградить» себя выпивкой.',
+    'Ты перегружен(а) делами и забываешь про сон, еду и отдых.',
+    'Тебе кажется, что тебя не поддержат, если ты признаешься в срыве.',
+    'Ты сравниваешь себя с одноклассниками в соцсетях и чувствуешь себя хуже.',
+    'Тебя раскритиковали, и после этого хочется всё бросить.',
+    'Ты решаешь, что «завтра точно начну заново», и откладываешь план.',
+    'Без привычного ритуала с напитком вечер кажется пустым.',
+    'Тебя пугает мысль, что придётся отказываться всю жизнь.',
+    'Ты проснулся(-ась) в плохом настроении без видимой причины.',
+    'У тебя заканчиваются силы, и хочется «быстрого» способа взбодриться.',
+    'Тебе предлагают помощь специалиста, но ты считаешь, что это для «слабых».',
+    'Ты вспоминаешь «весёлые» моменты с алкоголем и забываешь о неприятных последствиях.',
+    'Ты остался(-лась) один(одна) на выходных, и день тянется бесконечно.',
+  ],
+};
+for(const k in MORE_Q) SITUATIONS[k].push(...MORE_Q[k]);
+
+const QN = 10;                 // вопросов в одном прохождении
+const QUIZ_CD = 3*36e5;        // новый тест открывается через 3 часа
+const shuffle = a => { a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+const cdStr = ms => { const s=Math.max(0,Math.ceil(ms/1000)), h=Math.floor(s/3600), m=Math.floor(s%3600/60); return h>0 ? `${h} ч ${pad(m)} мин` : `${m} мин ${pad(s%60)} с`; };
+function pickQuestions(id){
+  const n = SITUATIONS[id].length, all = [...Array(n).keys()];
+  let seen = (S.seen && S.seen[id]) || [], reset = false;
+  let pool = all.filter(i => !seen.includes(i));
+  if(pool.length < QN){ pool = all; reset = true; }
+  return {idx: shuffle(pool).slice(0,QN), reset};
+}
+const rewardFor = id => S.qRew[id]===dateKey() ? 10 : 50;
+
 const TIPS = [
   'Тяга к алкоголю редко длится дольше 20 минут подряд, если её не подпитывать — её реально переждать.',
   'Сон меньше 6 часов сильно повышает тягу на следующий день — высыпаться недооценённый инструмент трезвости.',
@@ -485,6 +570,7 @@ const defaults = () => ({
   inv:[], done:{A:'',B:'',C:''}, history:[], milestones:[], journal:[],
   moods:{}, reasons:[], weeklySpend:0, cravings:0, craving:null, theme:'auto',
   savedBase:0, savedFrom:0, goal:null, lessonDone:[], plan:null,
+  pig:0, pigLog:[], qAt:{A:0,B:0,C:0}, qRew:{A:'',B:'',C:''}, seen:{A:[],B:[],C:[]},
 });
 let memStore = null;
 function load(){
@@ -652,8 +738,8 @@ screens.home = () => {
   </section>
 
   <button class="card tap" data-act="go" data-s="savings">
-    <div class="row"><div><h3>💰 Сэкономлено</h3><span class="muted">${S.weeklySpend ? (S.goal ? '🎯 '+esc(S.goal.name)+' · '+Math.min(100,Math.round(money/S.goal.cost*100))+'%' : 'по твоим обычным тратам') : 'Укажи, сколько уходило на алкоголь, — и увидишь сумму'}</span></div>
-    <div class="price" id="hMoney" style="font-size:22px">${S.weeklySpend ? fmtMoney(money) : 'Настроить ›'}</div></div>
+    <div class="row"><div><h3>🐷 Копилка</h3><span class="muted">${S.goal ? '🎯 '+esc(S.goal.name)+' · '+Math.min(100,Math.round((S.pig||0)/S.goal.cost*100))+'%' : 'Записывай, сколько отложил(а) вместо алкоголя'}</span></div>
+    <div class="price" style="font-size:22px">${(S.pig||0)>0 ? fmtMoney(S.pig) : 'Открыть ›'}</div></div>
   </button>
 
   <div class="grid">
@@ -826,7 +912,7 @@ screens.shop = () => {
   <h1>Материалы 🛍️</h1>
   <section class="card inv row"><span>Монеты поддержки</span><b style="font:700 24px 'Unbounded',sans-serif">${S.balance} ◇</b></section>
   <details class="card"><summary>💡 Как заработать монеты</summary>
-    <p class="muted" style="margin:0">✅ Отметка трезвости — +30 ◇ раз в сутки<br>🧠 Каждый тест — +50 ◇ (раз в день)<br>⏳ Пережитая тяга — +15 ◇<br>🏆 Награды за серию дней — до +180 ◇</p></details>
+    <p class="muted" style="margin:0">✅ Отметка трезвости — +30 ◇ раз в сутки<br>🧠 Тест — +50 ◇ (первый за день), повторные — +10 ◇<br>⏳ Пережитая тяга — +15 ◇<br>🏆 Награды за серию дней — до +180 ◇</p></details>
   <div>${FILTERS.map(f=>`<button class="chip ${SHOP_F===f[0]?'on':''}" data-act="shopf" data-f="${f[0]}">${f[1]}</button>`).join('')}</div>
   <div class="sp"></div>
   ${keys.map(k=>{
@@ -915,39 +1001,48 @@ screens.plan = () => {
   <button class="btn ghost" data-act="back">Назад</button>`;
 };
 
-/* ── Сэкономлено ── */
+/* ── Копилка ── */
+function pigAdd(amt, note){
+  amt = Math.round(amt); if(!amt) return;
+  S.pig = Math.max(0, (S.pig||0) + amt);
+  S.pigLog.push({t:Date.now(), a:amt, n:note||''}); S.pigLog = S.pigLog.slice(-30);
+  save();
+}
+function pigVal(){
+  const el=$('#pigIn'); const v=parseInt(el&&el.value,10)||0;
+  if(v<=0){ toast('Сначала впиши сумму'); hap('warning'); return 0; }
+  return Math.min(v,1e8);
+}
 screens.savings = () => {
-  const money=savedMoney(), w=S.weeklySpend||0, d=streakDays(), g=S.goal, cur_=CONFIG.currency;
-  let goalHtml;
-  if(g){
-    const pct=Math.min(100, money/g.cost*100), left=g.cost-money;
-    const days = (w>0 && left>0) ? Math.ceil(left/(w/7)) : 0;
-    goalHtml = `<section class="card"><div class="row"><h3>🎯 ${esc(g.name)}</h3><button class="link" data-act="goaldel">Убрать</button></div>
-      <div class="bar" style="margin:6px 0 8px"><i style="width:${pct}%"></i></div>
-      <div class="row"><span class="muted">${money>=g.cost ? '🎉 Цель достигнута!' : 'Осталось '+fmtMoney(left)}</span><span class="muted">${fmtMoney(g.cost)}</span></div>
-      ${days ? `<span class="muted">При таком темпе — примерно через ${days} ${plural(days,'день','дня','дней')}</span>` : ''}</section>`;
-  } else {
-    goalHtml = `<section class="card"><h3>🎯 На что копишь?</h3><span class="muted">Цель помогает держаться: видишь, сколько осталось.</span>
-      <div class="sp"></div><input type="text" id="gName" maxlength="40" placeholder="Например: новые наушники">
-      <div class="sp"></div><input type="number" inputmode="numeric" min="0" id="gCost" placeholder="Сколько стоит, ${cur_}">
-      <div class="sp"></div><button class="btn" data-act="goalsave">Поставить цель</button></section>`;
-  }
-  return `<h1>Сэкономлено 💰</h1>
-  <section class="card inv"><div class="hero-top">Ты не потратил(а) на алкоголь</div>
-    <div class="big-money" id="svAmt">${fmtMoney(money)}</div>
-    <div class="hero-next">${S.soberSince ? 'за '+d+' '+plural(d,'день','дня','дней')+' в текущей серии' : 'Подсчёт начнётся с первой отметки на главной'}${S.savedBase>0 ? '. Накопленное сохраняется даже после срыва' : ''}</div></section>
-  ${w>0 ? `<div class="stats">
-    <div class="stat"><b>${Math.round(w/7).toLocaleString('ru-RU')}</b><span>в день, ${cur_}</span></div>
-    <div class="stat"><b>${Math.round(w*30/7).toLocaleString('ru-RU')}</b><span>в месяц, ${cur_}</span></div>
-    <div class="stat"><b>${Math.round(w*365/7).toLocaleString('ru-RU')}</b><span>в год, ${cur_}</span></div></div>` : ''}
-  <section class="card"><h3>Сколько уходило в неделю</h3><span class="muted">Выбери или впиши свою сумму. Данные остаются на этом устройстве.</span>
-    <div style="margin:10px 0 4px">${[500,1000,2000,3000,5000].map(v=>`<button class="chip ${w===v?'on':''}" data-act="spendset" data-v="${v}">${v.toLocaleString('ru-RU')} ${cur_}</button>`).join('')}</div>
-    <div class="row"><button class="btn ghost sm" data-act="spendstep" data-d="-100">−100</button>
-      <input type="number" inputmode="numeric" min="0" id="spendIn" value="${w||''}" placeholder="0" style="text-align:center">
-      <button class="btn ghost sm" data-act="spendstep" data-d="100">+100</button></div>
-    <div class="sp"></div><button class="btn" data-act="spendsave">Сохранить</button></section>
+  const pig=S.pig||0, g=S.goal, w=S.weeklySpend||0, est=savedMoney(), c=CONFIG.currency;
+  const goalHtml = g
+    ? `<section class="card"><div class="row"><h3>🎯 Цель: ${esc(g.name)}</h3><button class="link" data-act="goaldel">Убрать</button></div>
+        <div class="bar" style="margin:8px 0"><i style="width:${Math.min(100,pig/g.cost*100)}%"></i></div>
+        <div class="row"><b>${fmtMoney(pig)}</b><span class="muted">из ${fmtMoney(g.cost)}</span></div>
+        <p class="muted" style="margin:6px 0 0">${pig>=g.cost ? '🎉 Цель достигнута!' : 'Осталось отложить '+fmtMoney(g.cost-pig)}</p></section>`
+    : `<section class="card"><h3>🎯 На что копишь?</h3><span class="muted">Необязательно. С целью проще не бросать.</span>
+        <div class="sp"></div><input type="text" id="gName" maxlength="40" placeholder="Например: новые наушники">
+        <div class="sp"></div><input type="number" inputmode="numeric" min="0" id="gCost" placeholder="Сколько стоят, ${c}">
+        <div class="sp"></div><button class="btn ghost" data-act="goalsave">Поставить цель</button></section>`;
+  const log = S.pigLog.slice(-5).reverse();
+  return `<h1>Копилка 🐷</h1>
+  <section class="card inv"><div class="hero-top">Сейчас в копилке</div>
+    <div class="big-money">${fmtMoney(pig)}</div>
+    <div class="hero-next">Деньги, которые ты отложил(а) вместо алкоголя</div></section>
+  <section class="card"><h3>Записать деньги</h3>
+    <span class="muted">Впиши сумму и нажми «Положить». Это твой личный учёт: приложение ничего не списывает.</span>
+    <div class="sp"></div><input type="number" inputmode="numeric" min="0" id="pigIn" placeholder="Сколько, ${c}">
+    <div style="margin:10px 0 4px"><span class="muted">Быстро добавить: </span>${[100,500,1000,2000].map(v=>`<button class="chip" data-act="pigq" data-v="${v}">+${v}</button>`).join('')}</div>
+    <button class="btn" data-act="pigadd">➕ Положить в копилку</button>
+    <button class="btn ghost" data-act="pigtake">➖ Взять из копилки</button></section>
   ${goalHtml}
-  <p class="muted">Это расчёт по сумме, которую ты указал(а): приложение ничего не списывает и не откладывает. Хочешь, чтобы деньги были настоящими — переводи эту сумму в копилку сам(а).</p>
+  ${log.length ? `<section class="card"><h3>Последние записи</h3>${log.map(e=>`<div class="row" style="padding:6px 0"><span class="muted">${new Date(e.t).toLocaleDateString('ru-RU',{day:'numeric',month:'short'})}${e.n?' · '+esc(e.n):''}</span><b>${e.a>0?'+':'−'}${fmtMoney(Math.abs(e.a))}</b></div>`).join('')}
+    <button class="link" data-act="pigundo">↩ Отменить последнюю запись</button></section>` : ''}
+  <details class="card" ${w>0?'open':''}><summary>🧮 Посчитать, сколько я не потратил(а)</summary>
+    <span class="muted">Укажи, сколько в неделю обычно уходило на алкоголь, — покажу сумму за время трезвости.</span>
+    <div class="row" style="margin-top:10px"><input type="number" inputmode="numeric" min="0" id="spendIn" value="${w||''}" placeholder="В неделю, ${c}"><button class="btn sm" data-act="spendsave">OK</button></div>
+    ${w>0 ? `<p style="margin:12px 0 8px">По расчёту: <b>${fmtMoney(est)}</b></p>${est>0 ? '<button class="btn ghost sm" data-act="estdeposit">Положить эту сумму в копилку</button>' : ''}` : ''}</details>
+  <p class="muted">Записи хранятся только на этом устройстве.</p>
   <button class="btn ghost" data-act="back">Назад</button>`;
 };
 
@@ -976,24 +1071,22 @@ screens.sos = () => `
   <button class="link" data-act="back">← Вернуться</button>`;
 
 /* ── Тесты ── */
-screens.quiz = () => {
-  const t = dateKey();
-  return `<h1>Тест дня 🧠</h1>
-  <p class="muted">Каждый тест можно пройти раз в день. За прохождение — +50 ◇.</p>
+screens.quiz = () => `<h1>Тесты 🧠</h1>
+  <p class="muted">Вопросы каждый раз подбираются заново. Новый тест открывается через ${QUIZ_CD/36e5} ч после прошлого. За первый тест дня — +50 ◇, за повторные — +10 ◇.</p>
   ${Object.entries(QUIZ_META).map(([id,m])=>{
-    const done = S.done[id]===t;
+    const wait = QUIZ_CD - (Date.now() - (S.qAt[id]||0)), locked = wait>0;
     return `<button class="card tap" data-act="quizstart" data-id="${id}">
-      <div class="row"><span><span style="font-size:26px">${m[0]}</span>&nbsp; ${m[1]}</span><span>${done?'✅':'›'}</span></div>
-      <span class="muted">${done?'Сегодня уже пройден':'10 вопросов · около 2 минут'}</span></button>`;}).join('')}
+      <div class="row"><span><span style="font-size:26px">${m[0]}</span>&nbsp; ${m[1]}</span><span>${locked?'⏳':'›'}</span></div>
+      ${locked ? `<span class="muted">Новый тест через <b id="qw${id}" data-lock="1">${cdStr(wait)}</b></span>`
+               : `<span class="muted" id="qw${id}">10 вопросов · около 2 минут · +${rewardFor(id)} ◇</span>`}</button>`;}).join('')}
   <h2>Последние результаты</h2>
   ${S.history.length ? S.history.slice(-5).reverse().map(h=>`<section class="card row"><div><b>${QUIZ_META[h.type][0]} ${QUIZ_META[h.type][1]}</b><br><span class="muted">${h.date} · ${esc(h.trend)}</span></div><div class="price" style="font-size:22px">${h.percent}%</div></section>`).join('') : '<section class="card muted">История пуста. Пройди первый тест.</section>'}`;
-};
 screens.quizrun = () => {
-  const list = SITUATIONS[Q.id], n = list.length;
+  const n = Q.idx.length;
   return `<div class="qhead"><span>${QUIZ_META[Q.id][0]} Вопрос ${Q.i+1} из ${n}</span><button class="link" data-act="quizquit">Выйти</button></div>
   <div class="bar"><i style="width:${Q.i/n*100}%"></i></div>
-  <h2 class="q">${esc(list[Q.i])}</h2>
-  ${OPTIONS.map((o,i)=>`<button class="opt" data-act="ans" data-i="${i}">${o}</button>`).join('')}`;
+  <h2 class="q">${esc(SITUATIONS[Q.id][Q.idx[Q.i]])}</h2>
+  ${Q.ord[Q.i].map(oi=>`<button class="opt" data-act="ans" data-i="${oi}">${OPTIONS[oi]}</button>`).join('')}`;
 };
 screens.quizres = r => {
   const v = r.pct>=75 ? ['✅','Низкий','Ты хорошо видишь ловушки и умеешь выстраивать личные границы.']
@@ -1001,7 +1094,7 @@ screens.quizres = r => {
           : ['🆘','Высокий','Сейчас тебе может быть особенно тяжело справляться самому(-ой). Воспользуйся SOS или линией доверия — это нормально.'];
   return `<div class="center"><div style="font-size:44px">${v[0]}</div><div class="pct">${r.pct}%</div><p class="muted">устойчивости · ${esc(r.trend)}</p></div>
   <section class="card"><h3>Уровень риска: ${v[1]}</h3><p style="margin:0">${v[2]}</p></section>
-  <section class="card inv"><p style="margin:0">💰 На баланс начислено <b>+50 ◇</b>.</p></section>
+  <section class="card inv"><p style="margin:0">💰 На баланс начислено <b>+${r.reward} ◇</b>.</p></section>
   ${r.pct<45 ? '<button class="btn" data-act="go" data-s="sos">🆘 Открыть помощь</button>' : ''}
   <button class="btn ${r.pct<45?'ghost':''}" data-act="tab" data-t="home">На главную</button>`;
 };
@@ -1059,7 +1152,7 @@ screens.profile = () => {
     <div class="stat"><b>${S.balance}</b><span>монет ◇</span></div>
     <div class="stat"><b>${S.cravings}</b><span>тяг пережито</span></div>
     <div class="stat"><b>${S.relapses}</b><span>честных перезапусков</span></div>
-    <div class="stat"><b>${money.toLocaleString('ru-RU')}</b><span>сэкономлено, ${CONFIG.currency}</span></div>
+    <div class="stat"><b>${(S.pig||0).toLocaleString('ru-RU')}</b><span>в копилке, ${CONFIG.currency}</span></div>
   </div>
   <h2>Награды</h2>
   <div class="badges">${MILESTONES.map(m=>`<div class="badge ${S.milestones.includes(m[0])?'':'lock'}"><span class="e">${m[1]}</span><span>${esc(m[2])}</span></div>`).join('')}</div>
@@ -1067,7 +1160,7 @@ screens.profile = () => {
   ${S.inv.filter(k=>ITEMS[k]).length ? S.inv.filter(k=>ITEMS[k]).map(k=>`<button class="card tap" data-act="read" data-k="${k}"><div class="row"><span>${ITEMS[k].emoji} ${esc(ITEMS[k].title)}</span><span>›</span></div></button>`).join('')
     : `<section class="card muted">Пока нет. Загляни в <button class="link" data-act="go" data-s="shop">«Материалы»</button>.</section>`}
   <h2>Настройки</h2>
-  <button class="card tap" data-act="go" data-s="savings"><div class="row"><span>💰 Копилка: траты в неделю и цель</span><span>›</span></div></button>
+  <button class="card tap" data-act="go" data-s="savings"><div class="row"><span>🐷 Копилка и цель</span><span>›</span></div></button>
   <button class="card tap" data-act="theme"><div class="row"><span>🌗 Тема: ${S.theme==='auto'?'как в Telegram':S.theme==='dark'?'тёмная':'светлая'}</span><span>›</span></div></button>
   <button class="card tap" data-act="relapseask"><div class="row"><span>🔄 Я сорвался(-ась) — начать заново</span><span>›</span></div></button>
   <button class="card tap" data-act="erase"><div class="row"><span>🗑 Стереть все мои данные</span><span>›</span></div></button>
@@ -1140,27 +1233,31 @@ const A = {
   reasondel(d){ S.reasons.splice(+d.i,1); save(); render(); },
 
   relapseask(){
-    ask('Это можно пройти','Срыв — не провал и не конец пути, а часть процесса, через который проходят многие. Счётчик можно честно обнулить и продолжить с чистого листа. Тесты, дневник, монеты, материалы и накопленная сумма «Сэкономлено» останутся.','Да, обнулить счётчик',()=>{
+    ask('Это можно пройти','Срыв — не провал и не конец пути, а часть процесса, через который проходят многие. Счётчик можно честно обнулить и продолжить с чистого листа. Тесты, дневник, монеты, материалы и копилка останутся.','Да, обнулить счётчик',()=>{
       S.savedBase=savedMoney(); S.savedFrom=Date.now(); S.soberSince=Date.now(); S.relapses++; save(); hap('success'); tab('home'); toast('Счётчик обнулён. Я рядом — ты справишься.');
     });
   },
 
   quizstart(d){
-    if(S.done[d.id]===dateKey()){ toast('Этот тест ты уже проходил(а) сегодня — выбери другой'); hap('warning'); return; }
-    Q={id:d.id,i:0,score:0}; go('quizrun');
+    const wait = QUIZ_CD - (Date.now() - (S.qAt[d.id]||0));
+    if(wait>0){ toast('Новый тест будет через '+cdStr(wait)); hap('warning'); return; }
+    const p = pickQuestions(d.id);
+    Q = {id:d.id, i:0, score:0, idx:p.idx, reset:p.reset, ord:p.idx.map(()=>shuffle([0,1,2,3]))};
+    go('quizrun');
   },
   quizquit(){ Q=null; back(); },
   ans(d){
     if(!Q) return;
     Q.score+=SCORES[+d.i]; Q.i++; hap('light');
-    const n=SITUATIONS[Q.id].length;
+    const n=Q.idx.length;
     if(Q.i<n){ render(); return; }
-    const pct=Math.round(Q.score/(n*3)*100), t=dateKey();
+    const pct=Math.round(Q.score/(n*3)*100), t=dateKey(), reward=rewardFor(Q.id);
     const last=S.history.length ? S.history[S.history.length-1].percent : null;
     const trend = last===null ? 'старт фиксации' : pct>last ? 'улучшение ▲' : pct<last ? 'ниже прошлого ▽' : 'стабильно';
     S.history.push({date:t,type:Q.id,percent:pct,trend}); S.history=S.history.slice(-30);
-    S.done[Q.id]=t; S.balance+=50; save(); Q=null;
-    hap(pct>=45?'success':'warning'); go('quizres',{pct,trend},true);
+    S.seen[Q.id] = (Q.reset ? [] : (S.seen[Q.id]||[])).concat(Q.idx);
+    S.qAt[Q.id]=Date.now(); S.qRew[Q.id]=t; S.done[Q.id]=t; S.balance+=reward; save(); Q=null;
+    hap(pct>=45?'success':'warning'); go('quizres',{pct,trend,reward},true);
   },
 
   jprompt(d){ const el=$('#jText'); if(el){ el.value=JOURNAL_PROMPTS[+d.i]+'\n'; el.focus(); } },
@@ -1173,8 +1270,23 @@ const A = {
 
   chatsend(){ chatSend(); },
 
-  spendset(d){ setWeekly(+d.v); hap('light'); render(); toast('Сохранено'); },
-  spendstep(d){ const el=$('#spendIn'); setWeekly(Math.max(0,(parseInt(el&&el.value,10)||0)+(+d.d))); hap('light'); render(); },
+  pigq(d){ const el=$('#pigIn'); if(el) el.value=(parseInt(el.value,10)||0)+(+d.v); },
+  pigadd(){
+    const v=pigVal(); if(!v) return;
+    pigAdd(v); hap('success'); render(); toast('🐷 +'+fmtMoney(v));
+    const g=S.goal;
+    if(g && !g.done && S.pig>=g.cost){ g.done=true; save(); sheet(`<h2>🎉 Цель достигнута!</h2><p>Ты накопил(а) на «${esc(g.name)}». Это результат твоих решений — гордись им.</p><button class="btn" data-act="mno">Отлично</button>`); }
+  },
+  pigtake(){
+    const v=pigVal(); if(!v) return;
+    if(v>(S.pig||0)){ toast('В копилке только '+fmtMoney(S.pig||0)); hap('warning'); return; }
+    pigAdd(-v); hap('light'); render(); toast('Взято '+fmtMoney(v));
+  },
+  pigundo(){ const e=S.pigLog.pop(); if(!e) return; S.pig=Math.max(0,(S.pig||0)-e.a); save(); hap('light'); render(); toast('Запись отменена'); },
+  estdeposit(){
+    const v=savedMoney(); if(v<=0){ toast('Пока считать нечего'); return; }
+    pigAdd(v,'из расчёта'); S.savedBase=0; S.savedFrom=Date.now(); save(); hap('success'); render(); toast('🐷 +'+fmtMoney(v));
+  },
   spendsave(){ const el=$('#spendIn'); setWeekly(parseInt(el&&el.value,10)||0); hap('success'); render(); toast('Сохранено'); },
   goalsave(){
     const n=$('#gName'), c=$('#gCost'); const name=n&&n.value.trim(), cost=parseInt(c&&c.value,10)||0;
@@ -1204,9 +1316,16 @@ document.addEventListener('keydown', e => {
 
 /* живой счётчик на главной */
 setInterval(()=>{
-  if(cur.name==='savings'){ const a=$('#svAmt'); if(a) a.textContent=fmtMoney(savedMoney()); return; }
+  if(cur.name==='quiz'){   // обратный отсчёт; когда тест откроется — экран обновится сам
+    for(const id of Object.keys(QUIZ_META)){
+      const e=$('#qw'+id); if(!e || e.dataset.lock!=='1') continue;
+      const w=QUIZ_CD-(Date.now()-(S.qAt[id]||0));
+      if(w<=0){ render(); return; }
+      e.textContent=cdStr(w);
+    }
+    return;
+  }
   if(cur.name!=='home') return;
-  const m=$('#hMoney'); if(m && S.weeklySpend) m.textContent=fmtMoney(savedMoney());
   if(!S.soberSince) return;
   const l=$('#hLive'); if(l) l.textContent=liveStr();
   const d=streakDays(), el=$('#hDays');
@@ -1220,4 +1339,3 @@ checkMilestones(true);
 </script>
 </body>
 </html>
-  
