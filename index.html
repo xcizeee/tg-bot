@@ -981,7 +981,7 @@ screens.shop = () => {
       <p class="muted" style="margin:0 0 12px">${esc(it.desc)}</p>
       ${owned ? `<div class="row"><span class="muted">${itemDone(k)?'✅ Пройдено':'Открыто'}</span><button class="btn sm" data-act="read" data-k="${k}">${itemBtn(k)}</button></div>`
         : enough ? `<div class="row"><span class="price">🔒 ${it.price} ◇</span><button class="btn sm" data-act="buy" data-k="${k}">Открыть за ${it.price} ◇</button></div>`
-        : `<div class="bar" style="margin-bottom:8px"><i style="width:${Math.round(S.balance/it.price*100)}%"></i></div><div class="row"><span class="muted">Не хватает ${it.price-S.balance} ◇</span><span class="price">🔒 ${it.price} ◇</span></div>`}
+        : `<div class="row"><span class="price">🔒 ${it.price} ◇</span><button class="btn sm ghost" data-act="buy" data-k="${k}">Не хватает ${it.price-S.balance} ◇</button></div>`}
     </section>`;}).join('')}`;
 };
 
