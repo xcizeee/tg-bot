@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="color-scheme" content="dark light">
+<meta name="color-scheme" content="dark">
 <title>Safe Space</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,10 +14,6 @@
   --bg:#000; --sf:#101010; --sf2:#1a1a1a; --ln:#2b2b2b;
   --tx:#fff; --mu:#8d8d8d; --inv-bg:#fff; --inv-tx:#000;
   --nav-h:68px;
-}
-:root[data-theme="light"]{
-  --bg:#fff; --sf:#f4f4f4; --sf2:#eaeaea; --ln:#dadada;
-  --tx:#000; --mu:#6a6a6a; --inv-bg:#000; --inv-tx:#fff;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;background:var(--bg);color:var(--tx);
@@ -127,7 +123,6 @@ textarea{min-height:96px;resize:vertical}
 @keyframes tp{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-4px);opacity:1}}
 .chat-chips{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
 .logo{height:19px;display:block}
-:root[data-theme="light"] .logo{filter:invert(1)}
 #splash{position:fixed;inset:0;z-index:60;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;transition:opacity .45s}
 #splash video{max-width:86%;max-height:52vh;border-radius:18px}
 #splash .skip{position:absolute;right:16px;top:calc(16px + env(safe-area-inset-top));background:rgba(255,255,255,.16);color:#fff;border:0;border-radius:999px;padding:8px 16px;font-size:14px}
@@ -995,7 +990,7 @@ const KEY = 'safespace.v2';
 const defaults = () => ({
   balance:20, lastBonus:0, soberDays:0, soberSince:null, relapses:0,
   inv:[], done:{A:'',B:'',C:''}, history:[], milestones:[], journal:[],
-  moods:{}, reasons:[], weeklySpend:0, cravings:0, craving:null, theme:'auto',
+  moods:{}, reasons:[], weeklySpend:0, cravings:0, craving:null, theme:'dark',
   savedBase:0, savedFrom:0, goal:null, lessonDone:[], plan:null,
   pig:0, pigLog:[], qAt:{A:0,B:0,C:0}, qRew:{A:'',B:'',C:''}, seen:{A:[],B:[],C:[]},
   user:null,
@@ -1014,17 +1009,12 @@ function save(){
 }
 let S = load();
 
-/* ═════════════ ТЕМА И TELEGRAM ═════════════ */
+/* ═════════════ ТЕМА И TELEGRAM: только чёрная ═════════════ */
 function applyTheme(){
-  let t = S.theme;
-  if(t==='auto'){
-    t = tg && tg.colorScheme ? tg.colorScheme
-      : (window.matchMedia && matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
-  }
-  document.documentElement.dataset.theme = t;
-  const c = t==='light' ? '#ffffff' : '#000000';
+  S.theme = 'dark';
+  document.documentElement.dataset.theme = 'dark';
   try{
-    if(tg){ tg.setHeaderColor(c); tg.setBackgroundColor(c); if(tg.setBottomBarColor) tg.setBottomBarColor(c); }
+    if(tg){ tg.setHeaderColor('#000000'); tg.setBackgroundColor('#000000'); if(tg.setBottomBarColor) tg.setBottomBarColor('#000000'); }
   }catch(e){}
 }
 if(tg){
@@ -1638,7 +1628,6 @@ screens.profile = () => {
     : `<section class="card muted">Пока нет. Загляни в <button class="link" data-act="go" data-s="shop">«Материалы»</button>.</section>`}
   <h2>Настройки</h2>
   <button class="card tap" data-act="go" data-s="savings"><div class="row"><span>🐷 Копилка и цель</span><span>›</span></div></button>
-  <button class="card tap" data-act="theme"><div class="row"><span>🌗 Тема: ${S.theme==='auto'?'как в Telegram':S.theme==='dark'?'тёмная':'светлая'}</span><span>›</span></div></button>
   <button class="card tap" data-act="relapseask"><div class="row"><span>🔄 Я сорвался(-ась) — начать заново</span><span>›</span></div></button>
   <button class="card tap" data-act="erase"><div class="row"><span>🗑 Стереть все мои данные</span><span>›</span></div></button>
   <p class="muted">Всё, что ты вводишь, хранится только на этом устройстве. Если стереть данные или сменить устройство, прогресс не восстановить.</p>`;
@@ -1779,7 +1768,6 @@ const A = {
     S.goal={name:name.slice(0,40),cost:Math.min(cost,1e8)}; save(); hap('success'); render(); toast('🎯 Цель сохранена');
   },
   goaldel(){ S.goal=null; save(); render(); },
-  theme(){ S.theme = S.theme==='auto'?'dark':S.theme==='dark'?'light':'auto'; save(); applyTheme(); render(); },
   erase(){
     ask('Стереть все данные?','Прогресс, дневник, тесты, монеты и причины будут удалены с этого устройства навсегда.','Стереть всё',()=>{
       try{ localStorage.removeItem(KEY); }catch(e){}
