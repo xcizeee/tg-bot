@@ -135,9 +135,10 @@ textarea{min-height:96px;resize:vertical}
   background:var(--bg);padding:8px 16px;border-top:1px solid var(--ln);z-index:4}
 .composer-in{max-width:520px;margin:0 auto;display:flex;gap:8px;align-items:center}
 
-.orb{width:240px;height:240px;margin:20px auto 14px;border-radius:50%;border:1.5px solid var(--ln);display:grid;place-items:center}
+.orb{width:240px;height:240px;margin:20px auto 14px;border-radius:50%;border:1.5px solid var(--ln);display:grid;place-items:center;
+  cursor:pointer;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
 .orb i{display:block;width:100%;height:100%;border-radius:50%;background:var(--tx);transform:scale(.55);
-  transition-property:transform;transition-timing-function:ease-in-out;transition-duration:1s}
+  will-change:transform;pointer-events:none}
 .center{text-align:center}
 .phase{font:500 20px 'Unbounded',sans-serif;min-height:30px}
 .timer{font:700 64px/1 'Unbounded',sans-serif;letter-spacing:-.04em;font-variant-numeric:tabular-nums;margin:14px 0}
@@ -783,6 +784,31 @@ INTENTS.push(
  replies:['Ты можешь передумать в любой момент. Согласие должно быть добровольным, без угроз, давления или состояния, когда человек не может осознанно согласиться. Не нужно доказывать или оправдывать отказ. Если чувствуешь опасность — уйди к безопасным людям и позови помощь. Если тебя шантажируют интимными фото, не отправляй новые материалы и обратись к доверенному взрослому/службе поддержки.']}
 );
 
+/* ── Интенты поддержки диалога: короткие реплики не должны проваливаться в «не понял» ── */
+INTENTS.push(
+{id:'ack', train:['да','ага','угу','ок','окей','ладно','хорошо','понял','поняла','ясно','точно','верно','согласен','согласна','ну да','конечно','давай','попробую','попробуем'],
+ replies:[
+  '👌 Договорились. Если захочешь разобрать подробнее — просто напиши, что произошло. Я рядом.',
+  'Хорошо 🤍 Я тут, если что-то понадобится: выговориться, совет или техника — просто напиши.']},
+{id:'no', train:['нет','неа','не хочу','не надо','не хочу сейчас','ни в коем случае','не буду'],
+ replies:[
+  'Поняла, не настаиваю 🤍 Можем просто поболтать или сменить тему — что угодно.',
+  'Окей, отложим. Если передумаешь — я здесь.']},
+{id:'bye', train:['пока','до свидания','прощай','спокойной ночи','до завтра','давай пока','мне пора','я пошёл','я пошла','до встречи','бывай'],
+ replies:[
+  'Пока 🤍 Возвращайся в любой момент — я никуда не денусь. Завтрашний день — новая отметка на счётчике.',
+  'До встречи 🌙 Ты сегодня справился(-ась). Я буду здесь, когда понадоблюсь.']},
+{id:'more', train:['расскажи подробнее','расскажи ещё','а подробнее','поподробнее','а ещё','что ещё','не понял','не поняла','непонятно','объясни','что ты имеешь в виду','а дальше что'],
+ qs:[['Подробнее про тягу','Что делать, если друг пьёт','Как справиться с тревогой']],
+ replies:[
+  'Могу рассказать подробнее — только уточни тему одной фразой: про тягу, про давление друзей, про тревогу, про сон или про что-то своё?',
+  'Хочу объяснить точно, а не в общих словах. Напиши, о чём именно: например, «подробнее про тягу» или «что делать, если друг пьёт».']},
+{id:'dontknow', train:['не знаю','хз','без понятия','не уверен','не уверена','сложно сказать','даже не знаю','сама не знаю','сам не знаю','хрен знает','понятия не имею'],
+ replies:[
+  'Это нормально — не знать. Можем разобраться вместе: что сейчас ощущается сильнее — напряжение, усталость, обида, скука?',
+  'И это честный ответ 🤍 Попробуй так: закрой глаза на пару секунд и спроси себя: «что я сейчас чувствую в теле?». Первое слово, которое придёт — напиши мне, начнём с него.']}
+);
+
 /* ── База знаний: точные ответы на частые вопросы ──────────────────
    Каждая запись: k — примеры вопросов, a — ответ, acts — кнопки (необязательно).
    Поиск — по пересечению слов с учётом «редкости» каждого слова (TF-IDF),
@@ -1057,13 +1083,15 @@ function smartFallback(text, isQ){
       'Я локальная нейросеть без интернета, а не поисковик — и лучше честно сказать «не знаю», чем выдумать. Зато я сильна в темах чувств, стресса, тяги и трезвости: спроси, например, «как алкоголь влияет на сон» или «что делать, когда давят».',
       'Моя база — про здоровье, эмоции и трезвость, а это за её пределами. Попробуй перефразировать или спросить что-то про настроение, тягу, давление компании — тут я отвечу уверенно.',
       'Не хочу гадать и вводить тебя в заблуждение. Если вопрос про чувства или трезвость — сформулируй чуть иначе, и я постараюсь помочь по делу.'
-    ]), acts:[['journal','📓 Дневник'],['breathe','🌬️ Дышать']]};
+    ]), acts:[['journal','📓 Дневник'],['breathe','🌬️ Дышать']],
+    qs:['Мне тревожно','Хочется выпить','Меня давят друзья','Что ты умеешь?']};
   return {text: pick([
     'Хочу понять тебя правильно, а не гадать. Что ты имеешь в виду — можешь привести один пример или рассказать, что произошло прямо перед этим?',
     'Я пока не уверена, что правильно поняла. Расскажи чуть конкретнее: что случилось, что ты сейчас чувствуешь и какой помощи ждёшь — совета или чтобы я просто выслушала?',
     'Не хочу перескакивать на другую тему и выдавать случайный ответ. Можешь уточнить одну деталь? Я буду отталкиваться от неё.',
     'Я рядом в разговоре. Что сейчас важнее: разобрать ситуацию по шагам, найти конкретные слова для ответа кому-то или просто выговориться?'
-  ]), acts:[['journal','📓 Дневник'],['breathe','🌬️ Дышать']]};
+  ]), acts:[['journal','📓 Дневник'],['breathe','🌬️ Дышать']],
+  qs:['Мне грустно','Мне тревожно','Просто скучно','Что ты умеешь?']};
 }
 
 /* слова → признаки: обрезаем окончания и добавляем пары слов,
@@ -1103,6 +1131,21 @@ function ensureNet(){
     }
   }
   NET={vocab,W,B,C};
+  NET_WORDS=new Set([...vocab.keys()].filter(k=>!k.includes('_')&&k.length>=4));
+  EXACT=new Map(); INTENTS.forEach(c=>c.train.forEach(x=>EXACT.set(x.toLowerCase().replace(/ё/g,'е'),c.id)));
+}
+let NET_WORDS=null, EXACT=null;
+/* исправляем опечатки по словарю нейросети («тяговато», «тагово» → «тяга» и т.п.) */
+function netFeats(text){
+  const ws = tok(text).map(stem);
+  const fixed = ws.map(w=>{
+    if(w.length<4 || NET.vocab.has(w)) return w;
+    let best=null;
+    for(const v of NET_WORDS){ if(Math.abs(v.length-w.length)>2) continue; if(ed2(w,v)){ best=v; break; } }
+    return best||w;
+  });
+  const f=new Set(fixed); for(let i=0;i<fixed.length-1;i++) f.add(fixed[i]+'_'+fixed[i+1]);
+  return [...f];
 }
 /* классификация: softmax по признакам фразы.
    Защита от ложных срабатываний: если нашлось меньше двух знакомых слов,
@@ -1111,7 +1154,7 @@ function classifyNet(text){
   ensureNet();
   const {vocab,W,B,C}=NET, scores=new Float32Array(C);
   let hit=0;
-  for(const f of feats(text)){ const id=vocab.get(f); if(id===undefined) continue; hit++;
+  for(const f of netFeats(text)){ const id=vocab.get(f); if(id===undefined) continue; hit++;
     for(let c=0;c<C;c++) scores[c]+=W[id*C+c]; }
   if(!hit) return null;
   for(let c=0;c<C;c++) scores[c]+=B[c];
@@ -1233,11 +1276,11 @@ function checkMilestones(announce){
 
 /* ═════════════ НАВИГАЦИЯ ═════════════ */
 const TAB_OF = {home:'home',tip:'home',mood:'home',breathe:'home',craving:'home',map:'home',shop:'home',reasons:'home',
-  quiz:'quiz',quizrun:'quiz',quizres:'quiz',journal:'journal',chat:'chat',profile:'profile',item:'profile',savings:'home',lesson:'home',plan:'home',sos:''};
+  quiz:'quiz',quizrun:'quiz',quizres:'quiz',journal:'journal',chat:'chat',profile:'profile',item:'profile',story:'profile',savings:'home',lesson:'home',plan:'home',sos:''};
 const HIDE_NAV = ['sos','quizrun','breathe','lesson'];
 let cur = {name:'home'}; const stack = [];
 let CT = null;               // таймер экрана «тяга»
-let BR = {id:0,pat:'478',running:false};
+let BR = {id:0,pat:'478',running:false,raf:0};
 let LP = {t:null,k:null,i:0,el:0,paused:false,done:false};   // видео-урок
 let SHOP_F = 'all';          // фильтр в «Материалах»
 let Q = null;                // текущий тест
@@ -1258,7 +1301,7 @@ function tabOf(){
 if(tg && tg.BackButton){ try{ tg.BackButton.onClick(back); }catch(e){} }
 
 function render(){
-  BR.id++; BR.running=false; clearInterval(CT); clearInterval(LP.t);
+  BR.id++; BR.running=false; cancelAnimationFrame(BR.raf); clearInterval(CT); clearInterval(LP.t);
   const fn = screens[cur.name] || screens.home;
   $('#view').innerHTML = fn(cur.arg);
   const tabName = tabOf();
@@ -1382,8 +1425,8 @@ screens.breathe = () => `
   <h1>Дышать 🌬️</h1>
   <p class="muted">Пять кругов — это около двух минут. Следи за кругом и счётом.</p>
   <div>${Object.entries(PATTERNS).map(([k,p])=>`<button class="chip ${BR.pat===k?'on':''}" data-act="brpat" data-p="${k}">${p.name}</button>`).join('')}</div>
-  <div class="orb"><i id="orb"></i></div>
-  <div class="center"><div class="phase" id="orbTx">Нажми «Начать»</div><div class="muted" id="cyc">&nbsp;</div></div>
+  <div class="orb" data-act="brtoggle" role="button" aria-label="Начать дыхательную технику"><i id="orb"></i></div>
+  <div class="center"><div class="phase" id="orbTx">Нажми на круг или «Начать»</div><div class="muted" id="cyc">&nbsp;</div></div>
   <div class="sp"></div>
   <button class="btn" id="brBtn" data-act="brstart">Начать</button>
   <button class="btn ghost" data-act="back">Назад</button>`;
@@ -1393,31 +1436,54 @@ function paintBreathBtn(){
   b.textContent = BR.running ? 'Остановить' : 'Начать';
   b.dataset.act = BR.running ? 'brstop' : 'brstart';
 }
-async function breathRun(){
-  const id = ++BR.id; BR.running = true; paintBreathBtn();
-  const steps = PATTERNS[BR.pat].steps;
-  for(let c=1;c<=5;c++){
-    const cyc=$('#cyc'); if(cyc) cyc.textContent = `Круг ${c} из 5`;
-    for(const [label,sec,scale] of steps){
-      const orb=$('#orb'); if(BR.id!==id || !orb) return;
-      orb.style.transitionDuration = sec+'s'; orb.style.transform = `scale(${scale})`;
-      hap('light');
-      for(let s=sec;s>0;s--){
-        const tx=$('#orbTx'); if(BR.id!==id || !tx) return;
-        tx.textContent = `${label} · ${s}`; await sleep(1000);
-      }
-    }
-  }
-  if(BR.id===id){
-    BR.running=false; paintBreathBtn(); hap('success');
-    const tx=$('#orbTx'); if(tx) tx.textContent='Готово 🌿';
-    const cyc=$('#cyc'); if(cyc) cyc.textContent='Как ты себя чувствуешь?';
-  }
+const easeIO = p => p<.5 ? 2*p*p : 1-Math.pow(-2*p+2,2)/2;
+const orbSet = v => { const o=$('#orb'); if(o) o.style.transform='scale('+v+')'; };
+/* плавный сдвиг круга на заданную позицию — одинаково работает на Android и ПК */
+function orbTween(to, ms){
+  cancelAnimationFrame(BR.raf);
+  const o=$('#orb'); if(!o) return;
+  const m=/scale\(([\d.]+)\)/.exec(o.style.transform); const from=m?+m[1]:.55;
+  const t0=Date.now();
+  const step=()=>{ const p=Math.min(1,(Date.now()-t0)/ms); orbSet(from+(to-from)*easeIO(p));
+    if(p<1) BR.raf=requestAnimationFrame(step); };
+  BR.raf=requestAnimationFrame(step);
+}
+function breathRun(){
+  const id=++BR.id; BR.running=true; paintBreathBtn(); hap('light');
+  const steps=PATTERNS[BR.pat].steps;
+  /* таймлайн всей техники: [подпись, длительность мс, масштаб от, масштаб до, круг] */
+  const tl=[]; let prev=.55;
+  for(let c=1;c<=5;c++) for(const [label,sec,to] of steps){ tl.push([label,sec*1000,prev,to,c]); prev=to; }
+  const total=tl.reduce((s,x)=>s+x[1],0), t0=Date.now();
+  let lastTx='', lastCyc='', lastSeg=-1;
+  const frame=()=>{
+    if(BR.id!==id || !BR.running) return;
+    if(!$('#orb')) return;
+    const el=Date.now()-t0;
+    if(el>=total){ breathFinish(); return; }
+    let acc=0, seg=tl[tl.length-1], start=0, si=tl.length-1;
+    for(let i=0;i<tl.length;i++){ if(el<acc+tl[i][1]){ seg=tl[i]; start=acc; si=i; break; } acc+=tl[i][1]; }
+    orbSet(seg[2]+(seg[3]-seg[2])*easeIO((el-start)/seg[1]));
+    if(si!==lastSeg){ lastSeg=si; hap('light'); }
+    const t=`${seg[0]} · ${Math.max(1,Math.ceil((start+seg[1]-el)/1000))}`;
+    const c=`Круг ${seg[4]} из 5`;
+    const tx=$('#orbTx'), cyc=$('#cyc');
+    if(tx&&t!==lastTx){ tx.textContent=t; lastTx=t; }
+    if(cyc&&c!==lastCyc){ cyc.textContent=c; lastCyc=c; }
+    BR.raf=requestAnimationFrame(frame);
+  };
+  BR.raf=requestAnimationFrame(frame);
+}
+function breathFinish(){
+  BR.running=false; paintBreathBtn(); hap('success');
+  const tx=$('#orbTx'); if(tx) tx.textContent='Готово 🌿';
+  const cyc=$('#cyc'); if(cyc) cyc.textContent='Как ты себя чувствуешь?';
 }
 function breathStop(){
   BR.id++; BR.running=false; paintBreathBtn();
-  const orb=$('#orb'); if(orb){ orb.style.transitionDuration='1s'; orb.style.transform='scale(.55)'; }
-  const tx=$('#orbTx'); if(tx) tx.textContent='Нажми «Начать»';
+  orbTween(.55, 600);
+  const tx=$('#orbTx'); if(tx) tx.textContent='Нажми на круг или «Начать»';
+  const cyc=$('#cyc'); if(cyc) cyc.textContent='\u00a0';
 }
 
 /* ── Переждать тягу ── */
@@ -1710,7 +1776,8 @@ screens.journal = () => `
 
 /* ── Помощник ── */
 const msgHtml = m => `<div class="msg ${m.me?'me':''}">${esc(m.text)}</div>` +
-  (m.acts ? `<div class="acts">${m.acts.map(a=>`<button class="chip" data-act="go" data-s="${a[0]}">${a[1]}</button>`).join('')}</div>` : '');
+  (m.acts ? `<div class="acts">${m.acts.map(a=>`<button class="chip" data-act="go" data-s="${a[0]}">${a[1]}</button>`).join('')}</div>` : '') +
+  (m.qs ? `<div class="chat-chips">${m.qs.map(q=>`<button class="chip" data-act="chatq" data-t="${esc(q)}">${esc(q)}</button>`).join('')}</div>` : '');
 const CHAT_SUGGEST = ['Меня давят друзья','Очень хочется выпить','Мне тревожно','Просто скучно','Какой у меня прогресс?'];
 screens.chat = () => {
   ensureNet();   // нейросеть обучается один раз, при первом открытии
@@ -1762,6 +1829,14 @@ function chatReply(text){
   /* 3. понимаем, вопрос ли это */
   const QW = ['как','почему','зачем','что','когда','где','куда','скольк','можно','правда','вредн','есть','кто','чей','какой','какая','какие','какое','стоит','бывает'];
   const isQ = /\?\s*$/.test(text) || /(^|\s)л[иь](\s|$)/.test(t) || tok(text).slice(0,3).some(w => QW.some(q => w.startsWith(q)));
+  /* быстрый путь: фраза точно совпадает с обучающим примером —
+     отвечаем уверенно, даже если это одно слово («да», «ок», «пока», «тяга») */
+  ensureNet();
+  if(EXACT && EXACT.has(t)){
+    const cat = INTENTS.find(c=>c.id===EXACT.get(t));
+    const rep = pick(cat.replies);
+    return {text: typeof rep==='function' ? rep() : rep, acts:cat.acts, qs:cat.qs};
+  }
   const r = classifyNet(text);
   const qa = qaAnswer(text);
   /* Не отвечаем по случайно угаданному интенту: нужен более сильный сигнал.
@@ -1779,7 +1854,7 @@ function chatReply(text){
     }
     const cat = INTENTS.find(c=>c.id===r.id);
     const rep = pick(cat.replies);
-    return {text: typeof rep==='function' ? rep() : rep, acts:cat.acts};
+    return {text: typeof rep==='function' ? rep() : rep, acts:cat.acts, qs:cat.qs};
   }
   if(qa) return qa;
   /* 5. честный запасной ответ */
@@ -1834,10 +1909,6 @@ screens.profile = () => {
   <p class="muted">Всё, что ты вводишь, хранится только на этом устройстве. Если стереть данные или сменить устройство, прогресс не восстановить. Safe Space — не врач и не психолог, а помощник с рекомендательным характером.</p>`;
 };
 
-/* ── История проекта (по пособию и проектной работе «Safe Space», 2026) ── */
-const personCard = (ini,name,role) => `<section class="card row" style="justify-content:flex-start;gap:14px">
-  <div style="flex:none;width:48px;height:48px;border-radius:50%;background:var(--tx);color:var(--bg);display:grid;place-items:center;font:700 17px 'Unbounded',sans-serif">${ini}</div>
-  <div><b style="font-size:16px">${name}</b><br><span class="muted">${role}</span></div></section>`;
 /* ═════════════ ДЕЙСТВИЯ ═════════════ */
 const A = {
   tab:d=>tab(d.t), go:d=>go(d.s), back:()=>back(),
@@ -1857,6 +1928,7 @@ const A = {
 
   brpat(d){ BR.pat=d.p; render(); },
   brstart(){ breathRun(); }, brstop(){ breathStop(); },
+  brtoggle(){ if(BR.running) breathStop(); else breathRun(); },
 
   cstart(){ S.craving={endAt:Date.now()+CRAVING_MS}; ideaI=Math.floor(Math.random()*IDEAS.length); save(); hap('light'); render(); },
   cidea(){ ideaI++; const el=$('#idea'); if(el) el.innerHTML=`<span class="muted">Попробуй сейчас</span><p style="font-size:18px;margin:6px 0 0">${IDEAS[ideaI%IDEAS.length]}</p>`; hap('light'); },
