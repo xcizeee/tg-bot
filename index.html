@@ -285,6 +285,8 @@ const CONFIG = {
 const AI_API_URL = window.SAFE_SPACE_AI_URL || '';
 
 const tg = (window.Telegram && window.Telegram.WebApp) ? window.Telegram.WebApp : null;
+/* Сообщаем боту, что окно открыто (для статистики). Текст не содержит никаких данных. */
+try{ if(tg && tg.sendData) tg.sendData('app_open'); }catch(e){}
 
 /* ═════════════ КОНТЕНТ ═════════════ */
 const MILESTONES = [
@@ -1954,6 +1956,7 @@ screens.profile = () => {
     : `<section class="card muted">Пока нет. Загляни в <button class="link" data-act="go" data-s="shop">«Материалы»</button>.</section>`}
   <h2>Настройки</h2>
   <button class="card tap" data-act="go" data-s="savings"><div class="row"><span>🐷 Копилка и цель</span><span>›</span></div></button>
+  <button class="card tap" data-act="feedback"><div class="row"><span>💬 Отправить отзыв</span><span>›</span></div></button>
   <button class="card tap" data-act="relapseask"><div class="row"><span>🔄 Я сорвался(-ась) — начать заново</span><span>›</span></div></button>
   <button class="card tap" data-act="erase"><div class="row"><span>🗑 Стереть все мои данные</span><span>›</span></div></button>
   <p class="muted">Всё, что ты вводишь, хранится только на этом устройстве. Если стереть данные или сменить устройство, прогресс не восстановить. Safe Space — не врач и не психолог, а помощник с рекомендательным характером.</p>`;
@@ -2095,6 +2098,27 @@ const A = {
     S.goal={name:name.slice(0,40),cost:Math.min(cost,1e8)}; save(); hap('success'); render(); toast('🎯 Цель сохранена');
   },
   goaldel(){ S.goal=null; save(); render(); },
+  feedback(){
+    sheet(`<h2>💬 Отправить отзыв</h2>
+    <p class="muted">Расскажи, что нравится, что неудобно и что добавить. Отзыв поможет сделать Safe Space лучше.</p>
+    <textarea id="fbText" maxlength="500" placeholder="Твой отзыв…"></textarea>
+    <div class="sp"></div>
+    <button class="btn" data-act="feedbacksend">📨 Отправить отзыв</button>
+    <button class="btn ghost" data-act="mno">Отмена</button>`);
+    const el=$('#fbText'); if(el) setTimeout(()=>el.focus(),250);
+  },
+  feedbacksend(){
+    const el=$('#fbText');
+    const v=el && el.value.trim();
+    if(!v){ toast('Сначала напиши пару слов'); hap('warning'); return; }
+    /* Отзыв никуда не отправляется и нигде не сохраняется — только благодарность. */
+    closeSheet(); hap('success');
+    sheet(`<div class="center"><div style="font-size:44px">💌</div>
+    <h2>Спасибо за отзыв!</h2>
+    <p class="muted">Мы ценим, что ты нашёл(ла) время. Твой отзыв поможет сделать Safe Space лучше.</p>
+    <button class="btn" data-act="mno">Закрыть</button></div>`);
+  },
+
   erase(){
     ask('Стереть все данные?','Прогресс, дневник, тесты, монеты и причины будут удалены с этого устройства навсегда.','Стереть всё',()=>{
       try{ localStorage.removeItem(KEY); }catch(e){}
